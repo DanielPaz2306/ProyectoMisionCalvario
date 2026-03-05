@@ -1,7 +1,7 @@
 package com.mision.calvario.entity;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "distritos")
@@ -21,6 +21,62 @@ public class DistritoEntity {
     @JoinColumn(name = "pastor_distrito_id")
     private PastoresEntity pastorDistrito;
 
-    @OneToMany
-    private ArrayList<PastoresEntity> pastores; //PENDIENTE DE VERIFICAR FUNCIONALIDAD
+    @OneToMany(mappedBy = "distrito")
+    private List<PastoresEntity> pastores; //PENDIENTE DE VERIFICAR FUNCIONALIDAD
+
+    public DistritoEntity() {
+    }
+
+    
+
+    public DistritoEntity(long id, String codigoDistrito, String nombreDistrito, PastoresEntity pastorDistrito, List<PastoresEntity> pastores) {
+        this.id = id;
+        this.codigoDistrito = codigoDistrito;
+        this.nombreDistrito = nombreDistrito;
+        this.pastorDistrito = pastorDistrito;
+        this.pastores = pastores;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getCodigoDistrito() {
+        return codigoDistrito;
+    }
+
+    public void setCodigoDistrito(String codigoDistrito) {
+        this.codigoDistrito = codigoDistrito;
+    }
+
+    public String getNombreDistrito() {
+        return nombreDistrito;
+    }
+
+    public void setNombreDistrito(String nombreDistrito) {
+        this.nombreDistrito = nombreDistrito;
+    }
+
+    public PastoresEntity getPastorDistrito() {
+        return pastorDistrito;
+    }
+
+    public void setPastorDistrito(PastoresEntity pastorDistrito) {
+        this.pastorDistrito = pastorDistrito;
+    }
+
+    public List<PastoresEntity> getPastores() {
+        return pastores;
+    }
+
+    public void setPastores(List<PastoresEntity> pastores) {
+        this.pastores = pastores;
+    }
+
+    
+
 }
