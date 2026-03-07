@@ -16,6 +16,9 @@ public interface DistritoRepository extends JpaRepository<DistritoEntity, Long>{
     Optional<DistritoEntity> findByNombreDistrito(String nombreDistrito);
 
     //para verificar si existe un distrito con un codigo específico
-    boolean exexistsByCodigoDistrito(String codigoDistrito);
+    boolean existsByCodigoDistrito(String codigoDistrito);
+
+    //para verificar si existe un distrito con un nombre igual
+    boolean existByNombreDistrito(String nombreDistrito);
     
 }
