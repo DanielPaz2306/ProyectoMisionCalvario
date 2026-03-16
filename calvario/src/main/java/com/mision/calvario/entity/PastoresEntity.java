@@ -27,7 +27,7 @@ private String celular;
 private int edad;
 
 @OneToOne
-@JoinColumn(name = "iglesia_id")
+@JoinColumn(name = "iglesia_id", nullable = true)
 private IglesiaEntity iglesia;
 
 @ManyToOne
@@ -92,6 +92,10 @@ public String getCodigoIglesia(){
 public String getCodigoDistrito(){
     return distrito.getCodigoDistrito();
 }
+public boolean getEsPastorDistrito(){
+    return esPastorDistrito;
+}
+
 
 public void setId(long id){
     this.id = id;
@@ -116,6 +120,9 @@ public void setDistrito(DistritoEntity distrito){
 }
 public void setIglesia(IglesiaEntity iglesia){
     this.iglesia = iglesia;
+}
+public void setEsPastorDistrito(boolean esPastorDistrito){
+    this.esPastorDistrito = esPastorDistrito;
 }
 
 

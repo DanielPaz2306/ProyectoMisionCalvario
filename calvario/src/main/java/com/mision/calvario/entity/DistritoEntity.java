@@ -18,7 +18,7 @@ public class DistritoEntity {
     private String nombreDistrito;
 
     @OneToOne
-    @JoinColumn(name = "pastor_distrito_id")
+    @JoinColumn(name = "pastor_distrito_id", nullable = true)
     private PastoresEntity pastorDistrito;
 
     @OneToMany(mappedBy = "distrito")

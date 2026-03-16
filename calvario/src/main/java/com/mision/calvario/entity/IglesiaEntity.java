@@ -16,23 +16,29 @@ public class IglesiaEntity {
     @Column(name = "nombreiglesia", nullable = false, length = 99)
     private String nombreiglesia;
 
+    @ManyToOne
+    @JoinColumn(name = "distrito_id")
+    private DistritoEntity distrito;
+
     @OneToOne(mappedBy = "iglesia")
     private PastoresEntity pastor;
 
     public IglesiaEntity() {
     }
 
-    public IglesiaEntity(long id, String codigoiglesia, String nombreiglesia, PastoresEntity pastor) {
+    public IglesiaEntity(long id, String codigoiglesia, String nombreiglesia, DistritoEntity distrito, PastoresEntity pastor) {
         this.id = id;
         this.codigoiglesia = codigoiglesia;
         this.nombreiglesia = nombreiglesia;
+        this.distrito = distrito;
         this.pastor = pastor;
     }
 
-    public IglesiaEntity(long id, String codigoiglesia, String nombreiglesia) {
+    public IglesiaEntity(long id, String codigoiglesia, String nombreiglesia, DistritoEntity distrito) {
         this.id = id;
         this.codigoiglesia = codigoiglesia;
         this.nombreiglesia = nombreiglesia;
+        this.distrito = distrito;
         this.pastor = null;
     }
 
@@ -59,6 +65,14 @@ public class IglesiaEntity {
 
     public void setNombreiglesia(String nombreiglesia) {
         this.nombreiglesia = nombreiglesia;
+    }
+
+    public DistritoEntity getDistrito(){
+        return distrito;
+    }
+
+    public void setDistrito(DistritoEntity distrito){
+        this.distrito = distrito;
     }
 
     public PastoresEntity getPastor() {

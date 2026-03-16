@@ -79,6 +79,7 @@ public class DistritoServiceImpl implements DistritoService {
             throw new RuntimeException("Este distrito no existe");
         }
         
+        
         distritoRepository.deleteById(id);
     }
 }
