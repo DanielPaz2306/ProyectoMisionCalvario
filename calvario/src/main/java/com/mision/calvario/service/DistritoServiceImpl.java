@@ -5,7 +5,11 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.List;
 import com.mision.calvario.entity.DistritoEntity;
+import com.mision.calvario.entity.IglesiaEntity;
+import com.mision.calvario.entity.PastoresEntity;
 import com.mision.calvario.repository.DistritoRepository;
+import com.mision.calvario.repository.IglesiaRepository;
+import com.mision.calvario.repository.PastoresRepository;
 
 @Service
 public class DistritoServiceImpl implements DistritoService {
@@ -13,12 +17,18 @@ public class DistritoServiceImpl implements DistritoService {
     @Autowired
     private DistritoRepository distritoRepository;
 
+    @Autowired
+    private IglesiaRepository iglesiaRepository;
+
+    @Autowired
+    private PastoresRepository pastoresRepository;
+
     @Override
     public DistritoEntity guardar(DistritoEntity distrito){
         if(distritoRepository.existsByCodigoDistrito(distrito.getCodigoDistrito())){
             throw new RuntimeException("Ya existe un distrito con este codigo");
         }
-        if(distritoRepository.existByNombreDistrito(distrito.getNombreDistrito())){
+        if(distritoRepository.existsByNombreDistrito(distrito.getNombreDistrito())){
             throw new RuntimeException("Ya existe un distrito con este nombre");
         }
 
@@ -38,7 +48,7 @@ public class DistritoServiceImpl implements DistritoService {
 
     @Override
     public List<DistritoEntity> buscarTodos(){
-        return distritoRepository.findAll();
+        return distritoRepository.findAllConPastorDistrito();
     }
 
     @Override
@@ -75,10 +85,17 @@ public class DistritoServiceImpl implements DistritoService {
 
     @Override
     public void eliminar(long id){
-        if(!distritoRepository.existsById(id)){
-            throw new RuntimeException("Este distrito no existe");
+        DistritoEntity distrito = distritoRepository.findById(id).orElseThrow(() -> new RuntimeException("Este distrito no existe"));
+
+        List<IglesiaEntity> iglesias = iglesiaRepository.findByDistrito(distrito);
+        if(!iglesias.isEmpty()){
+            throw new RuntimeException("No puedes eliminar un distrito que contiene iglesias.");
         }
         
+        List<PastoresEntity> pastores = pastoresRepository.findByDistrito(distrito);
+        if(!pastores.isEmpty()){
+            throw new RuntimeException("No puedes eliminar un distrito que contiene pastores.");
+        }
         
         distritoRepository.deleteById(id);
     }

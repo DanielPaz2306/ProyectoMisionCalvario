@@ -13,6 +13,8 @@ public interface IglesiaService {
 
     Optional<IglesiaEntity> buscarPorCodigo(String codigoIglesia);
 
+    List<IglesiaEntity> buscarPorDistrito(Long distritoId);
+
     List<IglesiaEntity> buscarTodos();
 
     IglesiaEntity actualizarIglesia(IglesiaEntity iglesia);

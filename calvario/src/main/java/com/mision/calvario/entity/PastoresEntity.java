@@ -1,130 +1,100 @@
 package com.mision.calvario.entity;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "pastores")
 public class PastoresEntity {
 
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-@Column(name = "codigopastor", nullable = true, length = 20)
-private String codigopastor;
+    @Column(name = "codigopastor", nullable = true, length = 20)
+    private String codigoPastor;  // ← camelCase
 
-@Column(name = "nombre", nullable = false, length = 50)
-private String nombre;
-//HOLA
-@Column(name = "apellido", nullable = false, length = 50)
-private String apellido;
+    @Column(name = "nombre", nullable = false, length = 50)
+    private String nombre;
 
-@Column(name = "celular", nullable = true, length = 10)
-private String celular;
+    @Column(name = "apellido", nullable = false, length = 50)
+    private String apellido;
 
-@Column(name = "edad", nullable = false, length = 3)
-private int edad;
+    @Column(name = "celular", nullable = true, length = 15)
+    private String celular;
 
-@OneToOne
-@JoinColumn(name = "iglesia_id", nullable = true)
-private IglesiaEntity iglesia;
+    @Column(name = "edad", nullable = false)
+    private int edad;
 
-@ManyToOne
-@JoinColumn(name = "distrito_id")
-private DistritoEntity distrito;
+    @JsonBackReference
+    @OneToOne
+    @JoinColumn(name = "iglesia_id", nullable = true)
+    private IglesiaEntity iglesia;
 
-@Column(name = "es_pastor_distrito")
-private boolean esPastorDistrito;
+    @JsonIgnoreProperties({"pastorDistrito", "pastores"})
+    @ManyToOne
+    @JoinColumn(name = "distrito_id")
+    private DistritoEntity distrito;
 
-public PastoresEntity(long id, String nombre, String apellido, String celular, int edad, IglesiaEntity iglesia, DistritoEntity distrito, boolean esPastorDistrito){
-    this.id = id;
-    this.nombre = nombre;
-    this.apellido = apellido;  // CONSTRUCTOR CON CELULAR
-    this.celular = celular;
-    this.edad = edad;
-    this.iglesia = iglesia;
-    this.distrito = distrito;
-    this.esPastorDistrito = esPastorDistrito;
-}
+    @Column(name = "es_pastor_distrito")
+    private boolean esPastorDistrito;
 
-public PastoresEntity(long id, String nombre, String apellido, int edad, IglesiaEntity iglesia, DistritoEntity distrito, boolean esPastorDistrito){
-    this.id = id;
-    this.nombre = nombre;
-    this.apellido = apellido;  // CONSTRUCTOR SIN CELULAR
-    this.celular = null;
-    this.edad = edad;
-    this.iglesia = iglesia;
-    this.distrito = distrito;
-    this.esPastorDistrito = esPastorDistrito;
-}
+    public PastoresEntity() {}
 
-public PastoresEntity() {
-}
+    public PastoresEntity(Long id, String nombre, String apellido, String celular, int edad, IglesiaEntity iglesia, DistritoEntity distrito, boolean esPastorDistrito){
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.celular = celular;
+        this.edad = edad;
+        this.iglesia = iglesia;
+        this.distrito = distrito;
+        this.esPastorDistrito = esPastorDistrito;
+    }
 
-public long getId(){
-    return id;
-}
-public String getCodigoPastor(){
-    return codigopastor;
-}
-public String getNombre(){
-    return nombre;
-}
-public String getApellido(){
-    return apellido;
-}
-public String getCelular(){
-    return celular;
-}
-public int getEdad(){
-    return edad;
-}
-public DistritoEntity getDistrito(){
-    return distrito;
-}
-public IglesiaEntity getIglesia(){
-    return iglesia;
-}
-public String getCodigoIglesia(){
-    return iglesia.getCodigoiglesia();
-}
-public String getCodigoDistrito(){
-    return distrito.getCodigoDistrito();
-}
-public boolean getEsPastorDistrito(){
-    return esPastorDistrito;
-}
+    public PastoresEntity(Long id, String nombre, String apellido, int edad, IglesiaEntity iglesia, DistritoEntity distrito, boolean esPastorDistrito){
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.celular = null;
+        this.edad = edad;
+        this.iglesia = iglesia;
+        this.distrito = distrito;
+        this.esPastorDistrito = esPastorDistrito;
+    }
 
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-public void setId(long id){
-    this.id = id;
-}
-public void setCodigoPastor(String codigopastor){
-    this.codigopastor = codigopastor;
-}
-public void setNombre(String nombre){
-    this.nombre = nombre;
-}
-public void setApellido(String apellido){
-    this.apellido = apellido;
-}
-public void setCelular(String celular){
-    this.celular = celular;
-}
-public void setEdad(int edad){
-    this.edad = edad;
-}
-public void setDistrito(DistritoEntity distrito){
-    this.distrito = distrito;
-}
-public void setIglesia(IglesiaEntity iglesia){
-    this.iglesia = iglesia;
-}
-public void setEsPastorDistrito(boolean esPastorDistrito){
-    this.esPastorDistrito = esPastorDistrito;
-}
+    public String getCodigoPastor() { return codigoPastor; }
+    public void setCodigoPastor(String codigoPastor) { this.codigoPastor = codigoPastor; }
 
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
+    public String getApellido() { return apellido; }
+    public void setApellido(String apellido) { this.apellido = apellido; }
 
+    public String getCelular() { return celular; }
+    public void setCelular(String celular) { this.celular = celular; }
+
+    public int getEdad() { return edad; }
+    public void setEdad(int edad) { this.edad = edad; }
+
+    public IglesiaEntity getIglesia() { return iglesia; }
+    public void setIglesia(IglesiaEntity iglesia) { this.iglesia = iglesia; }
+
+    public DistritoEntity getDistrito() { return distrito; }
+    public void setDistrito(DistritoEntity distrito) { this.distrito = distrito; }
+
+    public boolean getEsPastorDistrito() { return esPastorDistrito; }
+    public void setEsPastorDistrito(boolean esPastorDistrito) { this.esPastorDistrito = esPastorDistrito; }
+
+    public String getCodigoIglesia() { 
+        if(iglesia == null) return null;
+        return iglesia.getCodigoIglesia(); 
+    }   // ← actualizado
+    public String getCodigoDistrito() { return distrito.getCodigoDistrito(); }
 }

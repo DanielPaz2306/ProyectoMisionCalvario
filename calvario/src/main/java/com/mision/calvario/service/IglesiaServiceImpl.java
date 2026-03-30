@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.List;
 
-
+import com.mision.calvario.entity.DistritoEntity;
 import com.mision.calvario.entity.IglesiaEntity;
 import com.mision.calvario.entity.PastoresEntity;
 import com.mision.calvario.repository.IglesiaRepository;
@@ -27,15 +27,15 @@ public class IglesiaServiceImpl implements IglesiaService{
 
     @Override
     public IglesiaEntity guardar(IglesiaEntity iglesia){
-        if(iglesiaRepository.existByCodigoIglesia(iglesia.getCodigoiglesia())){
+        if(iglesiaRepository.existsByCodigoIglesia(iglesia.getCodigoIglesia())){
             throw new RuntimeException("Ya existe una iglesia con este codigo");
         }
-        if(iglesiaRepository.existByNombreIglesia(iglesia.getNombreiglesia())){
-            throw new RuntimeException("Ya existe una iglesia con este codigo");
+        if(iglesiaRepository.existsByNombreIglesia(iglesia.getNombreIglesia())){
+            throw new RuntimeException("Ya existe una iglesia con este nombre");
         }
-        if(iglesiaRepository.existByPastor(iglesia.getPastor())){
-            throw new RuntimeException("Ya existe una iglesia con este pastor");
-        }
+        if(iglesia.getPastor() != null && iglesiaRepository.existsByPastor(iglesia.getPastor())){
+        throw new RuntimeException("Ya existe una iglesia con este pastor");
+        }   
 
         
 
@@ -47,13 +47,21 @@ public class IglesiaServiceImpl implements IglesiaService{
     }
 
     @Override
+    public List<IglesiaEntity> buscarPorDistrito(Long distritoId){
+        DistritoEntity distrito = distritoService.buscarPorId(distritoId)
+            .orElseThrow(() -> new RuntimeException("Este distrito no existe"));
+        
+        return iglesiaRepository.findByDistrito(distrito);
+    }
+
+    @Override
     public Optional<IglesiaEntity> buscarPorId(Long id){
         return iglesiaRepository.findById(id);
     }
 
     @Override
     public Optional<IglesiaEntity> buscarPorCodigo(String codigo){
-        return iglesiaRepository.findByCodigoiglesia(codigo);
+        return iglesiaRepository.findByCodigoIglesia(codigo);
     }
 
     @Override
@@ -61,45 +69,45 @@ public class IglesiaServiceImpl implements IglesiaService{
         return iglesiaRepository.findAll();
     }
 
-    @Override
-    public IglesiaEntity actualizarIglesia(IglesiaEntity iglesia){
-        if(!iglesiaRepository.existById(iglesia.getId())){
-            throw new RuntimeException("Esta iglesia no existe!");
-        }
-        if(iglesia.getNombreiglesia() == null || iglesia.getNombreiglesia().isEmpty()){
-            throw new RuntimeException("El nombre de la iglesia no puede estar vacio!");
-        }
-        if(iglesia.getCodigoiglesia() == null || iglesia.getCodigoiglesia().isEmpty()){
-            throw new RuntimeException("El codigo de la iglesia no puede estar vacio!");
-        }
-
-        Optional<IglesiaEntity> iglesiaCodigo = iglesiaRepository.findByCodigoiglesia(iglesia.getCodigoiglesia());
-        Optional<IglesiaEntity> iglesiaNombre = iglesiaRepository.findByNombreiglesia(iglesia.getNombreiglesia());
-        Optional<PastoresEntity> iglesiaPastor = iglesiaRepository.findByPastor(iglesia.getPastor());
-
-        if(iglesiaCodigo.isPresent() && iglesiaCodigo.get().getId() != iglesia.getId()){
-            throw new RuntimeException("Ya existe una iglesia con ese codigo!");
-        }
-
-        if(iglesiaNombre.isPresent() && iglesiaNombre.get().getId() != iglesia.getId()){
-            throw new RuntimeException("Ya existe una iglesia con ese Nombre!");
-        }
-
-        if(distritoService.buscarPorId(iglesia.getDistrito().getId()).isEmpty()){
-            throw new RuntimeException("El distrito al que intentas actualizar no existe!");
-        }
-
-        if(iglesiaPastor.isPresent() && iglesiaPastor.get().getId() != iglesia.getPastor().getId()){
-            throw new RuntimeException("Ya existe una iglesia con ese Pastor!");
-        }
-
-        return iglesiaRepository.save(iglesia);
+@Override
+public IglesiaEntity actualizarIglesia(IglesiaEntity iglesia){
+    if(!iglesiaRepository.existsById(iglesia.getId())){
+        throw new RuntimeException("Esta iglesia no existe!");
+    }
+    if(iglesia.getNombreIglesia() == null || iglesia.getNombreIglesia().isEmpty()){
+        throw new RuntimeException("El nombre de la iglesia no puede estar vacio!");
+    }
+    if(iglesia.getCodigoIglesia() == null || iglesia.getCodigoIglesia().isEmpty()){
+        throw new RuntimeException("El codigo de la iglesia no puede estar vacio!");
     }
 
+    Optional<IglesiaEntity> iglesiaCodigo = iglesiaRepository.findByCodigoIglesia(iglesia.getCodigoIglesia());
+    Optional<IglesiaEntity> iglesiaNombre = iglesiaRepository.findByNombreIglesia(iglesia.getNombreIglesia());
+
+    if(iglesiaCodigo.isPresent() && iglesiaCodigo.get().getId() != iglesia.getId()){
+        throw new RuntimeException("Ya existe una iglesia con ese codigo!");
+    }
+    if(iglesiaNombre.isPresent() && iglesiaNombre.get().getId() != iglesia.getId()){
+        throw new RuntimeException("Ya existe una iglesia con ese Nombre!");
+    }
+    if(distritoService.buscarPorId(iglesia.getDistrito().getId()).isEmpty()){
+        throw new RuntimeException("El distrito al que intentas actualizar no existe!");
+    }
+
+    // ← solo validar pastor si no es null
+    if(iglesia.getPastor() != null){
+        Optional<IglesiaEntity> iglesiaPastor = iglesiaRepository.findByPastor(iglesia.getPastor());
+        if(iglesiaPastor.isPresent() && iglesiaPastor.get().getId() != iglesia.getId()){
+            throw new RuntimeException("Este pastor ya tiene una iglesia asignada!");
+        }
+    }
+
+    return iglesiaRepository.save(iglesia);
+}
 
     @Override
     public void eliminarIglesia(Long id){
-        if(!iglesiaRepository.existById(id)){
+        if(!iglesiaRepository.existsById(id)){
             throw new RuntimeException("Esta iglesia no existe");
         }
         Optional<PastoresEntity> pastor = pastoresRepository.findByIglesia(iglesiaRepository.findById(id).get());
@@ -114,11 +122,13 @@ public class IglesiaServiceImpl implements IglesiaService{
 
     @Override
     public PastoresEntity tienePastor(IglesiaEntity iglesia){
-        if(iglesia.getPastor() == null){
+        Optional<IglesiaEntity> iglesiaCompleta = iglesiaRepository.findById(iglesia.getId());
+
+        if(iglesiaCompleta.isEmpty()){
             return null;
         }
         else{
-            return iglesia.getPastor();
+            return iglesiaCompleta.get().getPastor();
         }
     }
 

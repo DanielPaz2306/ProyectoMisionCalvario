@@ -1,5 +1,7 @@
 package com.mision.calvario.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -8,79 +10,53 @@ public class IglesiaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "codigoiglesia", nullable = false, length = 10)
-    private String codigoiglesia;
+    private String codigoIglesia;  // ← camelCase
 
     @Column(name = "nombreiglesia", nullable = false, length = 99)
-    private String nombreiglesia;
+    private String nombreIglesia;  // ← camelCase
 
     @ManyToOne
     @JoinColumn(name = "distrito_id")
     private DistritoEntity distrito;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "iglesia")
     private PastoresEntity pastor;
 
     public IglesiaEntity() {
     }
 
-    public IglesiaEntity(long id, String codigoiglesia, String nombreiglesia, DistritoEntity distrito, PastoresEntity pastor) {
+    public IglesiaEntity(Long id, String codigoIglesia, String nombreIglesia, DistritoEntity distrito, PastoresEntity pastor) {
         this.id = id;
-        this.codigoiglesia = codigoiglesia;
-        this.nombreiglesia = nombreiglesia;
+        this.codigoIglesia = codigoIglesia;
+        this.nombreIglesia = nombreIglesia;
         this.distrito = distrito;
         this.pastor = pastor;
     }
 
-    public IglesiaEntity(long id, String codigoiglesia, String nombreiglesia, DistritoEntity distrito) {
+    public IglesiaEntity(Long id, String codigoIglesia, String nombreIglesia, DistritoEntity distrito) {
         this.id = id;
-        this.codigoiglesia = codigoiglesia;
-        this.nombreiglesia = nombreiglesia;
+        this.codigoIglesia = codigoIglesia;
+        this.nombreIglesia = nombreIglesia;
         this.distrito = distrito;
         this.pastor = null;
     }
 
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public long getId() {
-        return id;
-    }
+    public String getCodigoIglesia() { return codigoIglesia; }
+    public void setCodigoIglesia(String codigoIglesia) { this.codigoIglesia = codigoIglesia; }
 
-    public void setId(long id) {
-        this.id = id;
-    }
+    public String getNombreIglesia() { return nombreIglesia; }
+    public void setNombreIglesia(String nombreIglesia) { this.nombreIglesia = nombreIglesia; }
 
-    public String getCodigoiglesia() {
-        return codigoiglesia;
-    }
+    public DistritoEntity getDistrito() { return distrito; }
+    public void setDistrito(DistritoEntity distrito) { this.distrito = distrito; }
 
-    public void setCodigoiglesia(String codigoiglesia) {
-        this.codigoiglesia = codigoiglesia;
-    }
-
-    public String getNombreiglesia() {
-        return nombreiglesia;
-    }
-
-    public void setNombreiglesia(String nombreiglesia) {
-        this.nombreiglesia = nombreiglesia;
-    }
-
-    public DistritoEntity getDistrito(){
-        return distrito;
-    }
-
-    public void setDistrito(DistritoEntity distrito){
-        this.distrito = distrito;
-    }
-
-    public PastoresEntity getPastor() {
-        return pastor;
-    }
-
-    public void setPastor(PastoresEntity pastor) {
-        this.pastor = pastor;
-    }
-
+    public PastoresEntity getPastor() { return pastor; }
+    public void setPastor(PastoresEntity pastor) { this.pastor = pastor; }
 }

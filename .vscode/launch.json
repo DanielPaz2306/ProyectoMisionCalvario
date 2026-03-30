@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-CalvarioApplication<calvario>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.mision.calvario.CalvarioApplication",
+            "projectName": "calvario",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

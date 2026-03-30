@@ -9,32 +9,15 @@ import com.mision.calvario.entity.*;
 @Repository
 public interface PastoresRepository extends JpaRepository<PastoresEntity, Long>{
 
-    Optional<PastoresEntity> findById(Long id);
-
     Optional<PastoresEntity> findByCodigoPastor(String codigoPastor);
-
     List<PastoresEntity> findByNombre(String nombre);
-
     List<PastoresEntity> findByEdad(int edad);
-
     Optional<PastoresEntity> findByCelular(String celular);
-    //para buscar a todos los pastores de un distrito
     List<PastoresEntity> findByDistrito(DistritoEntity distrito);
-
-    //para buscarlos por apellido
     List<PastoresEntity> findByApellido(String apellido);
-
-    //busca el pastor de una iglesia
     Optional<PastoresEntity> findByIglesia(IglesiaEntity iglesia);
-
-    //buscar al pastor de un distrito
     Optional<PastoresEntity> findByDistritoAndEsPastorDistritoTrue(DistritoEntity distrito);
-
-    //verifica si una iglesia tiene pastor o no
-    boolean existByIglesia(IglesiaEntity iglesia);
-
-    boolean existByCodigoPastor(String codigoPastor);
-
-    boolean existByCelular(String celular);
-
+    boolean existsByIglesia(IglesiaEntity iglesia);
+    boolean existsByCodigoPastor(String codigoPastor);
+    boolean existsByCelular(String celular);
 }

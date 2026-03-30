@@ -3,13 +3,16 @@ package com.mision.calvario.entity;
 import jakarta.persistence.*;
 import java.util.List;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "distritos")
 public class DistritoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )
-    private long id;
+    private Long id;
 
     @Column(name = "codigodistrito", nullable = false, length = 10)
     private String codigoDistrito;
@@ -17,10 +20,12 @@ public class DistritoEntity {
     @Column(name = "nombredistrito", nullable = false, length = 99)
     private String nombreDistrito;
 
+
     @OneToOne
     @JoinColumn(name = "pastor_distrito_id", nullable = true)
     private PastoresEntity pastorDistrito;
 
+    @JsonIgnore   
     @OneToMany(mappedBy = "distrito")
     private List<PastoresEntity> pastores; //PENDIENTE DE VERIFICAR FUNCIONALIDAD
 
@@ -29,7 +34,7 @@ public class DistritoEntity {
 
     
 
-    public DistritoEntity(long id, String codigoDistrito, String nombreDistrito, PastoresEntity pastorDistrito, List<PastoresEntity> pastores) {
+    public DistritoEntity(Long id, String codigoDistrito, String nombreDistrito, PastoresEntity pastorDistrito, List<PastoresEntity> pastores) {
         this.id = id;
         this.codigoDistrito = codigoDistrito;
         this.nombreDistrito = nombreDistrito;
@@ -37,11 +42,11 @@ public class DistritoEntity {
         this.pastores = pastores;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
