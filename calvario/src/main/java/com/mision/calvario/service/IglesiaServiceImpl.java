@@ -69,8 +69,8 @@ public class IglesiaServiceImpl implements IglesiaService{
         return iglesiaRepository.findAll();
     }
 
-@Override
-public IglesiaEntity actualizarIglesia(IglesiaEntity iglesia){
+    @Override
+    public IglesiaEntity actualizarIglesia(IglesiaEntity iglesia){
     if(!iglesiaRepository.existsById(iglesia.getId())){
         throw new RuntimeException("Esta iglesia no existe!");
     }
@@ -131,5 +131,35 @@ public IglesiaEntity actualizarIglesia(IglesiaEntity iglesia){
             return iglesiaCompleta.get().getPastor();
         }
     }
+
+    @Override
+    public Optional<IglesiaEntity> buscarPorNombre(String nombre){
+        if(nombre == null || nombre.isEmpty()){
+            throw new RuntimeException("El nombre no puede estar vacio");
+        }
+
+        return iglesiaRepository.findByNombreIglesia(nombre);
+    }
+
+    @Override
+    public Optional<IglesiaEntity> buscarPorNombrePastor(String nombreCompleto){
+        if(nombreCompleto == null || nombreCompleto.isEmpty()){
+            throw new RuntimeException("El campo nombre no puede estar vacio");
+        }
+
+        return iglesiaRepository.findByPastorNombreCompleto(nombreCompleto);
+    }
+
+    @Override
+    public List<IglesiaEntity> buscarIglesiasSinPastor(){
+        return iglesiaRepository.findIglesiasSinPastor();
+    }
+
+    @Override
+    public List<IglesiaEntity> buscarIglesiasSinDistrito(){
+        return iglesiaRepository.findIglesiasSinDistrito();
+    }
+
+    
 
 }

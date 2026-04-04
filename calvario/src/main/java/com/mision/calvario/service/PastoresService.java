@@ -31,4 +31,14 @@ public interface PastoresService {
 
     void eliminar(Long id);
 
+    Optional<PastoresEntity> buscarPorCodigoIglesia(String codigo);
+
+    Optional<PastoresEntity> buscarPorNombreIglesia(String nombre);
+    
+    List<PastoresEntity> buscarPastoresDeDistrito();
+    
+    List<PastoresEntity> buscarPastoresSinIglesia();
+    
+    List<PastoresEntity> buscarPastoresSinDistrito();
+
 }

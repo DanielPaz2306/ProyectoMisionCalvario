@@ -7,6 +7,14 @@ import java.util.List;
 
 public interface IglesiaService {
 
+    Optional<IglesiaEntity> buscarPorNombre(String nombre);
+
+    Optional<IglesiaEntity> buscarPorNombrePastor(String nombre);
+
+    List<IglesiaEntity> buscarIglesiasSinPastor();
+
+    List<IglesiaEntity> buscarIglesiasSinDistrito();
+
     IglesiaEntity guardar(IglesiaEntity iglesia); //
 
     Optional<IglesiaEntity> buscarPorId(Long id);

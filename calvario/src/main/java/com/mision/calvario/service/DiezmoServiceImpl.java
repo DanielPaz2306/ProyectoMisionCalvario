@@ -160,17 +160,26 @@ public class DiezmoServiceImpl implements DiezmoService {
     }
 
     @Override
-    public List<DiezmoEntity> buscarPorPastor(PastoresEntity pastor){
+    public List<DiezmoEntity> buscarPorPastor(PastoresEntity pastor) {
+        if(pastoresService.buscarPorId(pastor.getId()).isEmpty()){
+            throw new RuntimeException("Este pastor no existe!");
+        }
         return diezmoRepository.findByPastor(pastor);
     }
 
     @Override
-    public List<DiezmoEntity> buscarPorIglesia(IglesiaEntity iglesia){
+    public List<DiezmoEntity> buscarPorIglesia(IglesiaEntity iglesia) {
+        if(iglesiaService.buscarPorId(iglesia.getId()).isEmpty()){
+            throw new RuntimeException("Esta iglesia no existe!");
+        }
         return diezmoRepository.findByIglesia(iglesia);
     }
 
     @Override
-    public List<DiezmoEntity> buscarPorPastorYPeriodo(PastoresEntity pastor, int mes, int anio) {       
+    public List<DiezmoEntity> buscarPorPastorYPeriodo(PastoresEntity pastor, int mes, int anio) {
+        if(pastoresService.buscarPorId(pastor.getId()).isEmpty()){
+            throw new RuntimeException("Este pastor no existe!");
+        }
         if (mes < 1 || mes > 12) {
             throw new RuntimeException("El mes debe estar entre 1 y 12!");
         }

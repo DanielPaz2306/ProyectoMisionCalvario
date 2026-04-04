@@ -67,7 +67,7 @@ public class IglesiaResponseDTO {
         IglesiaResponseDTO dto = new IglesiaResponseDTO();
 
         dto.setCodigoIglesia(iglesia.getCodigoIglesia());
-        dto.setNombreIglesia(iglesia.getCodigoIglesia());
+        dto.setNombreIglesia(iglesia.getNombreIglesia());
 
         if(iglesia.getDistrito() != null){
             dto.setCodigoDistrito(iglesia.getDistrito().getCodigoDistrito());

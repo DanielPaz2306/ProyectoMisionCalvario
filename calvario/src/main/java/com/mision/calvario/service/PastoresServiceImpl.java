@@ -35,8 +35,15 @@ public class PastoresServiceImpl implements PastoresService{
         this.distritoRepository = distritoRepository;
     }
 
-@Override
-public PastoresEntity guardar(PastoresEntity pastor){
+    @Override
+    public PastoresEntity guardar(PastoresEntity pastor){
+    // solo validar nit si viene en el request
+    if(pastor.getNitPastor() != null){
+        // necesitarías agregar este método al repository
+        if(pastoresRepository.existsByNitPastor(pastor.getNitPastor())){
+            throw new RuntimeException("Ya existe un pastor con ese NIT!");
+        }
+    }
 
     if(pastor.getNombre() == null || pastor.getNombre().isEmpty()){
         throw new RuntimeException("El nombre no puede estar vacio!");
@@ -136,7 +143,7 @@ public PastoresEntity guardar(PastoresEntity pastor){
     }
 
     @Override
-public PastoresEntity actualizar(PastoresEntity pastor){
+    public PastoresEntity actualizar(PastoresEntity pastor){
 
     if(!pastoresRepository.existsById(pastor.getId())){
         throw new RuntimeException("Este pastor no existe!");
@@ -152,6 +159,14 @@ public PastoresEntity actualizar(PastoresEntity pastor){
     }
     if(distritoService.buscarPorId(pastor.getDistrito().getId()).isEmpty()){
         throw new RuntimeException("Este distrito no existe, crealo primero!");
+    }
+
+    // solo validar nit si viene en el request
+    if(pastor.getNitPastor() != null){
+        Optional<PastoresEntity> pastorNit = pastoresRepository.findByNitPastor(pastor.getNitPastor());
+        if(pastorNit.isPresent() && pastorNit.get().getId() != pastor.getId()){
+            throw new RuntimeException("Ya existe un pastor con ese NIT!");
+        }
     }
 
     // solo buscar si no es null
@@ -207,6 +222,7 @@ public PastoresEntity actualizar(PastoresEntity pastor){
 
     return pastorActualizado;
 }
+    
     @Override
     public void eliminar(Long id){
               
@@ -230,4 +246,40 @@ public PastoresEntity actualizar(PastoresEntity pastor){
 
         pastoresRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<PastoresEntity> buscarPorCodigoIglesia(String codigo){
+        if(codigo == null || codigo.isEmpty()){
+            throw new RuntimeException("El codigo no puede estar vacio");
+        }
+
+        return pastoresRepository.findByIglesiaCodigoIglesia(codigo);
+    }
+
+    @Override
+    public Optional<PastoresEntity> buscarPorNombreIglesia(String nombre) {
+        if (nombre == null || nombre.isEmpty()) {
+            throw new RuntimeException("El nombre de iglesia no puede estar vacío");
+        }
+        return pastoresRepository.findByIglesiaNombreIglesia(nombre);
+    }
+
+    @Override
+    public List<PastoresEntity> buscarPastoresDeDistrito(){
+        return pastoresRepository.findByEsPastorDistritoTrue();
+    }
+
+    @Override
+    public List<PastoresEntity> buscarPastoresSinIglesia(){
+        return pastoresRepository.findPastoresSinIglesia();
+    }
+
+    @Override
+    public List<PastoresEntity> buscarPastoresSinDistrito(){
+        return pastoresRepository.findPastoresSinDistrito();
+    }
+
+
+
+
 }

@@ -1,6 +1,8 @@
 package com.mision.calvario.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.List;
@@ -17,7 +19,29 @@ public interface PastoresRepository extends JpaRepository<PastoresEntity, Long>{
     List<PastoresEntity> findByApellido(String apellido);
     Optional<PastoresEntity> findByIglesia(IglesiaEntity iglesia);
     Optional<PastoresEntity> findByDistritoAndEsPastorDistritoTrue(DistritoEntity distrito);
+
+        // Por código de iglesia
+    @Query("SELECT p FROM PastoresEntity p LEFT JOIN FETCH p.iglesia i WHERE i.codigoIglesia = :codigo")
+    Optional<PastoresEntity> findByIglesiaCodigoIglesia(@Param("codigo") String codigo);
+
+    // Por nombre de iglesia exacto
+    @Query("SELECT p FROM PastoresEntity p LEFT JOIN FETCH p.iglesia i WHERE LOWER(i.nombreIglesia) = LOWER(:nombre)")
+    Optional<PastoresEntity> findByIglesiaNombreIglesia(@Param("nombre") String nombre);
+
+    // Solo pastores de distrito
+    List<PastoresEntity> findByEsPastorDistritoTrue();
+
+    // Pastores sin iglesia
+    @Query("SELECT p FROM PastoresEntity p WHERE p.iglesia IS NULL")
+    List<PastoresEntity> findPastoresSinIglesia();
+
+    // Pastores sin distrito
+    @Query("SELECT p FROM PastoresEntity p WHERE p.distrito IS NULL")
+    List<PastoresEntity> findPastoresSinDistrito();
+
     boolean existsByIglesia(IglesiaEntity iglesia);
     boolean existsByCodigoPastor(String codigoPastor);
     boolean existsByCelular(String celular);
+    boolean existsByNitPastor(String nitPastor);
+    Optional<PastoresEntity> findByNitPastor(String nitPastor);
 }

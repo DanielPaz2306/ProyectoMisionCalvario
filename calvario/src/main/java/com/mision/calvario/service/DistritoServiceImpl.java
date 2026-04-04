@@ -42,6 +42,24 @@ public class DistritoServiceImpl implements DistritoService {
     }
 
     @Override
+    public List<DistritoEntity> buscarSinPastor(){
+        return distritoRepository.findDistritosSinPastor();
+    }
+
+    @Override
+    public Optional<DistritoEntity> buscarPorNombrePastorDistrito(String nombre){
+        if(nombre == null || nombre.isEmpty()){
+            throw new RuntimeException("El nombre no puede estar Vacio");
+        }
+        return distritoRepository.findByPastorDistritoNombre(nombre);
+    }
+
+    @Override
+    public Optional<DistritoEntity> buscarPorNombre(String nombre){
+        return distritoRepository.findByNombreDistrito(nombre);
+    }
+
+    @Override
     public Optional<DistritoEntity> buscarPorCodigo(String codigo){
         return distritoRepository.findByCodigoDistrito(codigo);
     }

@@ -28,6 +28,9 @@ public class PastoresEntity {
     @Column(name = "edad", nullable = false)
     private int edad;
 
+    @Column(name = "nitpastor", nullable = true, length = 10)
+    private String nitPastor;
+
     @JsonBackReference
     @OneToOne
     @JoinColumn(name = "iglesia_id", nullable = true)
@@ -97,4 +100,13 @@ public class PastoresEntity {
         return iglesia.getCodigoIglesia(); 
     }   // ← actualizado
     public String getCodigoDistrito() { return distrito.getCodigoDistrito(); }
+
+    public String getNitPastor() {
+    return nitPastor;
+    }
+    public void setNitPastor(String nitPastor) {
+        this.nitPastor = nitPastor;
+    }
+    
+
 }

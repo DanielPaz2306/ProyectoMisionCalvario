@@ -16,6 +16,25 @@ public class DistritoController {
     @Autowired
     private DistritoService distritoService;
 
+    @GetMapping("/nombre/{nombre}")
+    public DistritoResponseDTO buscarPorNombre(@PathVariable String nombre){
+        return distritoService.buscarPorNombre(nombre).map(DistritoResponseDTO::fromEntity)
+        .orElseThrow(() -> new RuntimeException("Distrito no encontrado con el nombre: " + nombre));
+    }
+
+    @GetMapping("/sin-pastor")
+    public List<DistritoResponseDTO> buscarSinPastor(){
+        return distritoService.buscarSinPastor().stream().map(DistritoResponseDTO::fromEntity)
+        .toList();
+    }
+
+    @GetMapping("/pastor/{nombre}")
+    public DistritoResponseDTO buscarPorNombrePastorDistrito(@PathVariable String nombre){
+        return distritoService.buscarPorNombrePastorDistrito(nombre)
+        .map(DistritoResponseDTO::fromEntity)
+        .orElseThrow(() -> new RuntimeException("El pastor "+ nombre + " no es pastor de Distrito de ningun distrito."));
+    }
+
     @GetMapping
     public List<DistritoResponseDTO> buscarTodos() {
         return distritoService.buscarTodos()

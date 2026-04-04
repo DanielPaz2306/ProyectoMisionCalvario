@@ -25,6 +25,43 @@ public class PastoresController {
     @Autowired
     private PastoresService pastoresService;
 
+    @GetMapping("/iglesia/codigo/{codigo}")
+    public PastorResponseDTO buscarPorCodigoIglesia(@PathVariable String codigo){
+        return pastoresService.buscarPorCodigoIglesia(codigo)
+        .map(PastorResponseDTO::fromEntity)
+        .orElseThrow(() -> new RuntimeException("No existe un pastor en el codigo de iglesia: " + codigo));
+    }
+
+    @GetMapping("/iglesia/nombre/{nombre}")
+    public PastorResponseDTO buscarPorNombreIglesia(@PathVariable String nombre){
+        return pastoresService.buscarPorNombreIglesia(nombre).map(PastorResponseDTO::fromEntity)
+        .orElseThrow(() -> new RuntimeException("No existe un pastor en la iglesia: " + nombre));
+    }
+
+    @GetMapping("/pastores-distrito")
+    public List<PastorResponseDTO> buscarPastoresDeDistrito(){
+        return pastoresService.buscarPastoresDeDistrito()
+        .stream()
+        .map(PastorResponseDTO::fromEntity)
+        .toList();
+    }
+
+    @GetMapping("/sin-iglesia")
+    public List<PastorResponseDTO> buscarPastoresSinIglesia(){
+        return pastoresService.buscarPastoresSinIglesia()
+        .stream()
+        .map(PastorResponseDTO::fromEntity)
+        .toList();
+    }
+
+    @GetMapping("/sin-distrito")
+    public List<PastorResponseDTO> buscarPastoresSinDistrito(){
+        return pastoresService.buscarPastoresSinDistrito()
+        .stream()
+        .map(PastorResponseDTO::fromEntity)
+        .toList(); 
+    }
+
     @GetMapping
     public List<PastorResponseDTO> buscarTodos(){
         return pastoresService.buscarTodos().stream().map(PastorResponseDTO::fromEntity).toList();

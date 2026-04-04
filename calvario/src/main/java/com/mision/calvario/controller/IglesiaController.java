@@ -14,6 +14,34 @@ public class IglesiaController {
     @Autowired
     private IglesiaService iglesiaService;
 
+    @GetMapping("/nombre/{nombre}")
+    public IglesiaResponseDTO buscarPorNombre(@PathVariable String nombre){
+        return iglesiaService.buscarPorNombre(nombre).map(IglesiaResponseDTO::fromEntity)
+        .orElseThrow(() -> new RuntimeException("No existe la iglesia llamada: "+ nombre));
+    }
+
+    @GetMapping("/pastor/{nombreCompleto}")
+    public IglesiaResponseDTO buscarPorNombrePastor(@PathVariable String nombreCompleto){
+        return iglesiaService.buscarPorNombrePastor(nombreCompleto).map(IglesiaResponseDTO::fromEntity)
+        .orElseThrow(() -> new RuntimeException("No existe una iglesia con ese pastor"));
+    }
+
+    @GetMapping("/sin-pastor")
+    public List<IglesiaResponseDTO> buscarIglesiasSinPastor(){
+        return iglesiaService.buscarIglesiasSinPastor()
+        .stream()
+        .map(IglesiaResponseDTO::fromEntity)
+        .toList();
+    }
+
+    @GetMapping("/sin-distrito")
+    public List<IglesiaResponseDTO> buscarIglesiasSinDistrito(){
+        return iglesiaService.buscarIglesiasSinDistrito()
+        .stream()
+        .map(IglesiaResponseDTO::fromEntity)
+        .toList();
+    }
+
     @GetMapping
     public List<IglesiaResponseDTO> buscarTodos() {
         return iglesiaService.buscarTodos()
@@ -60,4 +88,7 @@ public class IglesiaController {
     public void eliminar(@PathVariable Long id) {
         iglesiaService.eliminarIglesia(id);
     }
+
+
+
 }
