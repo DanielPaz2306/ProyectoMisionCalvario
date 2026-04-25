@@ -27,7 +27,11 @@ public class DistritoEntity {
 
     @JsonIgnore   
     @OneToMany(mappedBy = "distrito")
-    private List<PastoresEntity> pastores; //PENDIENTE DE VERIFICAR FUNCIONALIDAD
+    private List<PastoresEntity> pastores; 
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "distrito")
+    private List<IglesiaEntity> iglesias;
 
     public DistritoEntity() {
     }
@@ -80,6 +84,15 @@ public class DistritoEntity {
 
     public void setPastores(List<PastoresEntity> pastores) {
         this.pastores = pastores;
+    }
+
+
+
+    public List<IglesiaEntity> getIglesias() {
+        return iglesias;
+    }
+    public void setIglesias(List<IglesiaEntity> iglesias) {
+        this.iglesias = iglesias;
     }
 
     

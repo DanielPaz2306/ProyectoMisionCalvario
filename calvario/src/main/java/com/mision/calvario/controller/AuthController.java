@@ -30,6 +30,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public LoginResponseDTO login(@RequestBody LoginRequestDTO request) {
+        
         // Autenticar usuario
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -44,8 +45,8 @@ public class AuthController {
 
         // Generar token
         String token = jwtUtil.generarToken(usuario.getUsername(), usuario.getRol());
-
-        return new LoginResponseDTO(token, usuario.getUsername(), usuario.getRol());
+        Long pastorId = usuario.getPastor() != null ? usuario.getPastor().getId() : null;
+        return new LoginResponseDTO(token, usuario.getUsername(), usuario.getRol(), pastorId);
     }
 
     @PostMapping("/registro")

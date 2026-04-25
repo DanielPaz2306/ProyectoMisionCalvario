@@ -4,6 +4,7 @@ import com.mision.calvario.entity.PastoresEntity;
 
 public class PastorResponseDTO {
 
+    private Long id;
     private String codigoPastor;
     private String nombre;
     private String apellido;
@@ -97,10 +98,19 @@ public class PastorResponseDTO {
         this.esPastorDistrito = esPastorDistrito;
     }
 
+     public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }   
+
     
     public static PastorResponseDTO fromEntity(PastoresEntity pastor){
         PastorResponseDTO dto = new PastorResponseDTO();
 
+        dto.setId(pastor.getId());
         dto.setCodigoPastor(pastor.getCodigoPastor());
         dto.setNombre(pastor.getNombre());
         dto.setApellido(pastor.getApellido());
@@ -121,6 +131,8 @@ public class PastorResponseDTO {
         return dto;
 
     }
+
+
 
 
 }

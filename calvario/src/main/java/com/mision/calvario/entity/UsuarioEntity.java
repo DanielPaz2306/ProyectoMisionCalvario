@@ -23,6 +23,10 @@ public class UsuarioEntity {
     @Column(name = "activo", nullable = false)
     private boolean activo;
 
+    @OneToOne
+    @JoinColumn(name = "pastorId", nullable = true)
+    private PastoresEntity pastor;
+
     public UsuarioEntity(){}
 
     public Long getId() { return id; }
@@ -39,5 +43,12 @@ public class UsuarioEntity {
 
     public boolean isActivo() { return activo; }
     public void setActivo(boolean activo) { this.activo = activo; }
+
+    public PastoresEntity getPastor(){
+        return pastor;
+    }
+    public void setPastor(PastoresEntity pastor){
+        this.pastor = pastor;
+    }
 
 }

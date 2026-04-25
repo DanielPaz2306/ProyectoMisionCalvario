@@ -70,36 +70,76 @@ public class DistritoServiceImpl implements DistritoService {
     }
 
     @Override
-    public DistritoEntity actualizar(DistritoEntity distrito){
+    public DistritoEntity actualizar(DistritoEntity distrito) {
 
-        if(!distritoRepository.existsById(distrito.getId())){
-            throw new RuntimeException("Este Distrito no Existe"); 
-        }
-
-        if(distrito.getNombreDistrito() == null || distrito.getNombreDistrito().isEmpty() ){
-            throw new RuntimeException("El nombre del distrito no puede estar vacio");
-        }
-
-        if(distrito.getCodigoDistrito() == null || distrito.getCodigoDistrito() == ""){
-            throw new RuntimeException("El codigo del distrito no puede estar vacio");
-        }
-
-        Optional<DistritoEntity> distritoCodigo = distritoRepository.findByCodigoDistrito(distrito.getCodigoDistrito());
-        Optional<DistritoEntity> distritoNombre = distritoRepository.findByNombreDistrito(distrito.getNombreDistrito());
-
-        //Verifica si existe otro distrito con ese codigo para luego obtener el id de este registro
-        //y luego verifica si el id encontrado es igual al que pretendo modificar para asi evitar que hayan codigos dupes
-        if( distritoCodigo.isPresent() && distritoCodigo.get().getId() != distrito.getId()){
-            throw new RuntimeException("Ya existe un distrito con ese codigo");
-        }
-        
-        //lo mismo de arriba pero con el nombre
-        if( distritoNombre.isPresent() && distritoNombre.get().getId() != distrito.getId()){
-            throw new RuntimeException("Ya existe un distrito con ese nombre");
-        }
-
-        return distritoRepository.save(distrito); //usamos el mismo save que en guardar porque JPA lo guarda si el distrito no tiene id, y si ya tiene solo lo actualiza
+    if (!distritoRepository.existsById(distrito.getId())) {
+        throw new RuntimeException("Este Distrito no Existe");
     }
+
+    if (distrito.getNombreDistrito() == null || distrito.getNombreDistrito().isEmpty()) {
+        throw new RuntimeException("El nombre del distrito no puede estar vacio");
+    }
+
+    if (distrito.getCodigoDistrito() == null || distrito.getCodigoDistrito().isEmpty()) {
+        throw new RuntimeException("El codigo del distrito no puede estar vacio");
+    }
+
+    Optional<DistritoEntity> distritoCodigo = distritoRepository.findByCodigoDistrito(distrito.getCodigoDistrito());
+    Optional<DistritoEntity> distritoNombre = distritoRepository.findByNombreDistrito(distrito.getNombreDistrito());
+
+    if (distritoCodigo.isPresent() && distritoCodigo.get().getId() != distrito.getId()) {
+        throw new RuntimeException("Ya existe un distrito con ese codigo");
+    }
+
+    if (distritoNombre.isPresent() && distritoNombre.get().getId() != distrito.getId()) {
+        throw new RuntimeException("Ya existe un distrito con ese nombre");
+    }
+
+    // Obtener el distrito actual de la BD
+    DistritoEntity distritoActual = distritoRepository.findById(distrito.getId()).get();
+
+    if (distrito.getPastorDistrito() != null) {
+
+        // Buscar el pastor nuevo
+        PastoresEntity pastorNuevo = pastoresRepository.findById(distrito.getPastorDistrito().getId())
+                .orElseThrow(() -> new RuntimeException("El pastor no existe"));
+
+        // Validar que el pastor pertenece a este distrito
+        if (pastorNuevo.getDistrito() == null || pastorNuevo.getDistrito().getId() != distrito.getId()) {
+            throw new RuntimeException("El pastor no pertenece a este distrito — traslada al pastor primero");
+        }
+
+        // Verificar que el pastor no es PD de otro distrito
+        Optional<DistritoEntity> distritoConEsePastor = distritoRepository.findByPastorDistrito(pastorNuevo);
+        if (distritoConEsePastor.isPresent() && distritoConEsePastor.get().getId() != distrito.getId()) {
+            throw new RuntimeException("Este pastor ya es pastor de distrito en " + distritoConEsePastor.get().getNombreDistrito());
+        }
+
+        // Desasignar pastor anterior si existía y es diferente al nuevo
+        if (distritoActual.getPastorDistrito() != null &&
+            distritoActual.getPastorDistrito().getId() != pastorNuevo.getId()) {
+            PastoresEntity pastorAnterior = distritoActual.getPastorDistrito();
+            pastorAnterior.setEsPastorDistrito(false);
+            pastoresRepository.save(pastorAnterior);
+        }
+
+        // Asignar nuevo pastor
+        pastorNuevo.setEsPastorDistrito(true);
+        pastoresRepository.save(pastorNuevo);
+        distrito.setPastorDistrito(pastorNuevo);
+
+    } else {
+        // Si viene null — dejar distrito sin PD
+        if (distritoActual.getPastorDistrito() != null) {
+            PastoresEntity pastorAnterior = distritoActual.getPastorDistrito();
+            pastorAnterior.setEsPastorDistrito(false);
+            pastoresRepository.save(pastorAnterior);
+        }
+        distrito.setPastorDistrito(null);
+    }
+
+    return distritoRepository.save(distrito);
+}
 
     @Override
     public void eliminar(long id){
