@@ -10,6 +10,7 @@ import {
   getPastores,
 } from '../services/apiService';
 import Layout from '../components/Layout';
+import { useAuth } from '../context/AuthContext';
 
 const estilos = {
   contenedor: {
@@ -283,9 +284,10 @@ const FORM_INICIAL = {
 };
 
 export default function Iglesias() {
-  const rolRaw = localStorage.getItem('rol') || '';
-  const rol = rolRaw.replace(/"/g, '');
-  const pastorIdUsuario = localStorage.getItem('pastorId');
+  const { usuario } = useAuth();
+  const rol = usuario?.rol || '';
+  const pastorIdUsuario = usuario?.pastorId || null;
+  const distritoIdUsuario = usuario?.distritoId || null;
 
   const esAdmin = rol === 'ADMIN';
   const esAP = rol === 'AP';
@@ -319,28 +321,18 @@ export default function Iglesias() {
     setCargando(true);
     try {
       let data;
-      if (esPD && pastorIdUsuario) {
-        // PD: cargar solo iglesias de su distrito
-        // Necesitamos saber el distritoId del PD — lo obtenemos de sus iglesias o pastores
-        // Usamos endpoint filtrado por distrito si ya lo tenemos, o todas y filtramos
-        const todas = await getIglesias();
-        // Buscar el distrito del PD leyendo su pastorId
-        // En el token no viene distritoId, así que filtramos después de conocerlo
-        data = todas;
+      if (esPD && distritoIdUsuario) {
+        data = await getIglesiasByDistrito(distritoIdUsuario);
       } else if (esPastor && pastorIdUsuario) {
         const todas = await getIglesias();
-        data = todas.filter(
-          (ig) => ig.codigoPastor && String(ig.codigoPastor) !== ''
-            ? all_pastorMatch(ig, pastorIdUsuario)
-            : false
+        // Filtrar iglesias cuyo pastor asignado coincida (suponiendo que la entidad devuelve la relación)
+        // O si backend ya devuelve el codigoPastor en getIglesias
+        data = todas.filter(ig => 
+           (ig.codigoPastor && ig.codigoPastor === usuario?.codigoPastor) || 
+           (ig.pastorId && ig.pastorId === pastorIdUsuario)
         );
-        // Simplificado: mostrar solo la iglesia del pastor
-        const todasP = await getIglesias();
-        // buscamos por pastorId en el campo que corresponde
-        data = todasP.filter((ig) => ig.nombrePastor && pastorIdUsuario);
-        // Mejor: traer todas y mostrar solo la suya
-        data = todas;
       } else {
+        // ADMIN y AP ven todas
         data = await getIglesias();
       }
       setIglesias(Array.isArray(data) ? data : []);
@@ -408,18 +400,6 @@ export default function Iglesias() {
       filtroPastor === '' ||
       (ig.nombrePastor && ig.nombrePastor.toLowerCase().includes(busqueda)) ||
       (ig.codigoPastor && ig.codigoPastor.toLowerCase().includes(busqueda));
-
-    // PD: solo su distrito
-    if (esPD) {
-      // Intentamos determinar el distrito del PD desde los datos cargados
-      // Si filtroDistrito no está activo aún, mostramos todo lo que tengamos
-      return matchDistrito && matchPastor;
-    }
-
-    // PASTOR: solo su iglesia
-    if (esPastor) {
-      return ig.codigoPastor && matchPastor;
-    }
 
     return matchDistrito && matchPastor;
   });
@@ -498,8 +478,8 @@ export default function Iglesias() {
       const payload = {
         codigoIglesia: form.codigoIglesia.trim() || null,
         nombreIglesia: form.nombreIglesia.trim(),
-        distritoId: parseInt(form.distritoId, 10),
-        pastorId: form.pastorId ? parseInt(form.pastorId, 10) : null,
+        distrito: form.distritoId ? { id: parseInt(form.distritoId, 10) } : null,
+        pastor: form.pastorId ? { id: parseInt(form.pastorId, 10) } : null,
       };
 
       if (modoEdicion) {
@@ -703,6 +683,7 @@ export default function Iglesias() {
                 value={form.codigoIglesia}
                 onChange={manejarCambio}
                 placeholder="Ej. IG-001 (opcional)"
+                maxLength="10"
               />
             </div>
 

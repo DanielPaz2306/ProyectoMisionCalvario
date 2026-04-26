@@ -44,8 +44,12 @@ public class AuthController {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         // Generar token
-        String token = jwtUtil.generarToken(usuario.getUsername(), usuario.getRol());
         Long pastorId = usuario.getPastor() != null ? usuario.getPastor().getId() : null;
+        Long distritoId = null;
+        if (usuario.getPastor() != null && usuario.getPastor().getDistrito() != null) {
+            distritoId = usuario.getPastor().getDistrito().getId();
+        }
+        String token = jwtUtil.generarToken(usuario.getUsername(), usuario.getRol(), pastorId, distritoId);
         return new LoginResponseDTO(token, usuario.getUsername(), usuario.getRol(), pastorId);
     }
 

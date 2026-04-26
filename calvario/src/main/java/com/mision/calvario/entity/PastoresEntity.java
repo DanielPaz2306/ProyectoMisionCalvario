@@ -99,7 +99,9 @@ public class PastoresEntity {
         if(iglesia == null) return null;
         return iglesia.getCodigoIglesia(); 
     }   // ← actualizado
-    public String getCodigoDistrito() { return distrito.getCodigoDistrito(); }
+    public String getCodigoDistrito() { 
+        return (distrito != null) ? distrito.getCodigoDistrito() : null; 
+    }
 
     public String getNitPastor() {
     return nitPastor;

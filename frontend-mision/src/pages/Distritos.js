@@ -219,6 +219,7 @@ const handleGuardar = async () => {
                                 onChange={handleChange}
                                 style={styles.input}
                                 placeholder="Ej: D001"
+                                maxLength="10"
                             />
                         </div>
 

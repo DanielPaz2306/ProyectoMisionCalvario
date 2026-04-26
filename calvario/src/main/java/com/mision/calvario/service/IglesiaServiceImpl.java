@@ -43,7 +43,17 @@ public class IglesiaServiceImpl implements IglesiaService{
             throw new RuntimeException("Este distrito no existe, crealo primero!");
         }
 
-        return iglesiaRepository.save(iglesia);
+        IglesiaEntity savedIglesia = iglesiaRepository.save(iglesia);
+        
+        if (iglesia.getPastor() != null && iglesia.getPastor().getId() != null) {
+            PastoresEntity pastor = pastoresRepository.findById(iglesia.getPastor().getId())
+                .orElseThrow(() -> new RuntimeException("Pastor no encontrado"));
+            pastor.setIglesia(savedIglesia);
+            pastoresRepository.save(pastor);
+            savedIglesia.setPastor(pastor);
+        }
+
+        return savedIglesia;
     }
 
     @Override
@@ -102,7 +112,26 @@ public class IglesiaServiceImpl implements IglesiaService{
         }
     }
 
-    return iglesiaRepository.save(iglesia);
+    IglesiaEntity savedIglesia = iglesiaRepository.save(iglesia);
+
+    // Actualizar dueño de la relación (PastoresEntity)
+    Optional<PastoresEntity> pastorAnterior = pastoresRepository.findByIglesia(savedIglesia);
+    if (pastorAnterior.isPresent() && (iglesia.getPastor() == null || !pastorAnterior.get().getId().equals(iglesia.getPastor().getId()))) {
+        pastorAnterior.get().setIglesia(null);
+        pastoresRepository.save(pastorAnterior.get());
+    }
+
+    if (iglesia.getPastor() != null && iglesia.getPastor().getId() != null) {
+        PastoresEntity nuevoPastor = pastoresRepository.findById(iglesia.getPastor().getId())
+            .orElseThrow(() -> new RuntimeException("Pastor no encontrado"));
+        nuevoPastor.setIglesia(savedIglesia);
+        pastoresRepository.save(nuevoPastor);
+        savedIglesia.setPastor(nuevoPastor);
+    } else {
+        savedIglesia.setPastor(null);
+    }
+
+    return savedIglesia;
 }
 
     @Override

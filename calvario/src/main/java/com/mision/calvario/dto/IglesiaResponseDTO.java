@@ -4,6 +4,7 @@ import com.mision.calvario.entity.IglesiaEntity;
 
 public class IglesiaResponseDTO {
 
+    private Long id;
     private String codigoIglesia;
     private String nombreIglesia;
     private String codigoDistrito;
@@ -13,6 +14,13 @@ public class IglesiaResponseDTO {
     private String celularPastor;
 
     public IglesiaResponseDTO(){}
+
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getCodigoIglesia() {
         return codigoIglesia;
@@ -66,6 +74,7 @@ public class IglesiaResponseDTO {
     public static IglesiaResponseDTO fromEntity(IglesiaEntity iglesia){
         IglesiaResponseDTO dto = new IglesiaResponseDTO();
 
+        dto.setId(iglesia.getId());
         dto.setCodigoIglesia(iglesia.getCodigoIglesia());
         dto.setNombreIglesia(iglesia.getNombreIglesia());
 
