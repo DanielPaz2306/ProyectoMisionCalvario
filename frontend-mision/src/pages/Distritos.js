@@ -15,8 +15,9 @@ const Distritos = () => {
     const [modalError, setModalError] = useState("");
     const [distritoEditando, setDistritoEditando] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [modalVerPastoresOpen, setModalVerPastoresOpen] = useState(false);
+    const [distritoSeleccionado, setDistritoSeleccionado] = useState(null);
     const [form, setForm] = useState({
-        codigoDistrito: "",
         nombreDistrito: "",
         pastorDistrito: null,
     });
@@ -43,7 +44,7 @@ const Distritos = () => {
 
     const abrirModalCrear = () => {
         setDistritoEditando(null);
-        setForm({ codigoDistrito: "", nombreDistrito: "", pastorDistrito: null });
+        setForm({ nombreDistrito: "", pastorDistrito: null });
         setModalError("");
         setModalOpen(true);
     };
@@ -51,7 +52,6 @@ const Distritos = () => {
     const abrirModalEditar = (distrito) => {
         setDistritoEditando(distrito);
         setForm({
-            codigoDistrito: distrito.codigoDistrito,
             nombreDistrito: distrito.nombreDistrito,
             pastorDistrito: distrito.codigoPastorDistrito
                 ? { id: distrito.pastorDistritoId }
@@ -64,6 +64,11 @@ const Distritos = () => {
     const cerrarModal = () => {
         setModalOpen(false);
         setModalError("");
+    };
+
+    const abrirModalVerPastores = (distrito) => {
+        setDistritoSeleccionado(distrito);
+        setModalVerPastoresOpen(true);
     };
 
     const handleChange = (e) => {
@@ -83,7 +88,6 @@ const handleGuardar = async () => {
     try {
         setModalError("");
         const payload = {
-            codigoDistrito: form.codigoDistrito,
             nombreDistrito: form.nombreDistrito,
             pastorDistrito: form.pastorDistrito?.id ? { id: form.pastorDistrito.id } : null,
         };
@@ -194,6 +198,12 @@ const handleGuardar = async () => {
                                 <span style={styles.badge}>{distrito.totalIglesias}</span>
                             </div>
                         </div>
+                        <button 
+                            onClick={() => abrirModalVerPastores(distrito)} 
+                            style={styles.btnSecundario}
+                        >
+                            Ver Pastores del Distrito
+                        </button>
                     </div>
                 ))}
             </div>
@@ -210,18 +220,6 @@ const handleGuardar = async () => {
                         </div>
 
                         {modalError && <p style={styles.modalError}>{modalError}</p>}
-
-                        <div style={styles.inputGroup}>
-                            <label style={styles.label}>Código</label>
-                            <input
-                                name="codigoDistrito"
-                                value={form.codigoDistrito}
-                                onChange={handleChange}
-                                style={styles.input}
-                                placeholder="Ej: D001"
-                                maxLength="10"
-                            />
-                        </div>
 
                         <div style={styles.inputGroup}>
                             <label style={styles.label}>Nombre</label>
@@ -258,9 +256,41 @@ const handleGuardar = async () => {
                                 {distritoEditando ? "Actualizar" : "Guardar"}
                             </button>
                         </div>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+
+                {/* Modal Ver Pastores */}
+                {modalVerPastoresOpen && distritoSeleccionado && (
+                    <div style={styles.modalOverlay}>
+                        <div style={styles.modal}>
+                            <div style={styles.modalHeader}>
+                                <h3 style={styles.modalTitulo}>
+                                    Pastores en {distritoSeleccionado.nombreDistrito}
+                                </h3>
+                                <button onClick={() => setModalVerPastoresOpen(false)} style={styles.btnCerrar}>✕</button>
+                            </div>
+                            
+                            <div style={{ maxHeight: '300px', overflowY: 'auto', paddingRight: '10px' }}>
+                                {pastores.filter(p => p.distritoId === distritoSeleccionado.id).length > 0 ? (
+                                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                                        {pastores.filter(p => p.distritoId === distritoSeleccionado.id).map(p => (
+                                            <li key={p.id} style={{ padding: '12px 0', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div>
+                                                    <div style={{ fontWeight: '600', color: '#1a1a2e', fontSize: '15px' }}>{p.nombre} {p.apellido}</div>
+                                                    <div style={{ fontSize: '13px', color: '#888', marginTop: '4px' }}>{p.codigoPastor} • Cel: {p.celular || 'N/A'}</div>
+                                                </div>
+                                                {p.esPastorDistrito && <span style={styles.badgePD}>PD</span>}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p style={{ textAlign: 'center', color: '#888', padding: '20px' }}>No hay pastores asignados a este distrito.</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </Layout>
     );
@@ -399,6 +429,28 @@ const styles = {
         padding: "2px 10px",
         fontSize: "13px",
         fontWeight: "700",
+    },
+    badgePD: {
+        backgroundColor: "#e3f2fd",
+        color: "#1976d2",
+        borderRadius: "6px",
+        padding: "3px 10px",
+        fontSize: "12px",
+        fontWeight: "700",
+        letterSpacing: "0.5px",
+    },
+    btnSecundario: {
+        width: "100%",
+        marginTop: "16px",
+        backgroundColor: "#fff3f0",
+        color: "#FF4000",
+        border: "1px solid #ffccbc",
+        borderRadius: "8px",
+        padding: "10px",
+        fontSize: "14px",
+        fontWeight: "600",
+        cursor: "pointer",
+        transition: "background-color 0.2s",
     },
     loading: {
         textAlign: "center",

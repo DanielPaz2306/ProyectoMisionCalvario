@@ -25,16 +25,15 @@ public class DistritoServiceImpl implements DistritoService {
 
     @Override
     public DistritoEntity guardar(DistritoEntity distrito){
-        if(distritoRepository.existsByCodigoDistrito(distrito.getCodigoDistrito())){
-            throw new RuntimeException("Ya existe un distrito con este codigo");
-        }
         if(distritoRepository.existsByNombreDistrito(distrito.getNombreDistrito())){
             throw new RuntimeException("Ya existe un distrito con este nombre");
         }
 
-        return distritoRepository.save(distrito);
-
-    };
+        distrito.setCodigoDistrito("TMP");
+        DistritoEntity saved = distritoRepository.save(distrito);
+        saved.setCodigoDistrito("D" + String.format("%03d", saved.getId()));
+        return distritoRepository.save(saved);
+    }
 
     @Override
     public Optional<DistritoEntity> buscarPorId(long id){
@@ -80,23 +79,16 @@ public class DistritoServiceImpl implements DistritoService {
         throw new RuntimeException("El nombre del distrito no puede estar vacio");
     }
 
-    if (distrito.getCodigoDistrito() == null || distrito.getCodigoDistrito().isEmpty()) {
-        throw new RuntimeException("El codigo del distrito no puede estar vacio");
-    }
-
-    Optional<DistritoEntity> distritoCodigo = distritoRepository.findByCodigoDistrito(distrito.getCodigoDistrito());
     Optional<DistritoEntity> distritoNombre = distritoRepository.findByNombreDistrito(distrito.getNombreDistrito());
-
-    if (distritoCodigo.isPresent() && distritoCodigo.get().getId() != distrito.getId()) {
-        throw new RuntimeException("Ya existe un distrito con ese codigo");
-    }
-
     if (distritoNombre.isPresent() && distritoNombre.get().getId() != distrito.getId()) {
         throw new RuntimeException("Ya existe un distrito con ese nombre");
     }
 
     // Obtener el distrito actual de la BD
     DistritoEntity distritoActual = distritoRepository.findById(distrito.getId()).get();
+    
+    // Mantener el código original ya que el frontend ya no lo envía
+    distrito.setCodigoDistrito(distritoActual.getCodigoDistrito());
 
     if (distrito.getPastorDistrito() != null) {
 

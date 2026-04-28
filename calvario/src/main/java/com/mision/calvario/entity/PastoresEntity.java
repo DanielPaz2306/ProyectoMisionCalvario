@@ -31,7 +31,7 @@ public class PastoresEntity {
     @Column(name = "nitpastor", nullable = true, length = 10)
     private String nitPastor;
 
-    @JsonBackReference
+    @JsonIgnoreProperties("pastor")
     @OneToOne
     @JoinColumn(name = "iglesia_id", nullable = true)
     private IglesiaEntity iglesia;

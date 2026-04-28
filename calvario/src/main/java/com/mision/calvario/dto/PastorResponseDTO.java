@@ -15,6 +15,9 @@ public class PastorResponseDTO {
     private String codigoDistrito;
     private String nombreDistrito;
     private boolean esPastorDistrito;
+    private String nitPastor;
+    private Long iglesiaId;
+    private Long distritoId;
 
     public PastorResponseDTO(){}
 
@@ -98,7 +101,7 @@ public class PastorResponseDTO {
         this.esPastorDistrito = esPastorDistrito;
     }
 
-     public Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -106,7 +109,29 @@ public class PastorResponseDTO {
         this.id = id;
     }   
 
-    
+    public String getNitPastor() {
+        return nitPastor;
+    }
+
+    public void setNitPastor(String nitPastor) {
+        this.nitPastor = nitPastor;
+    }
+
+    public Long getIglesiaId() {
+        return iglesiaId;
+    }
+
+    public void setIglesiaId(Long iglesiaId) {
+        this.iglesiaId = iglesiaId;
+    }
+
+    public Long getDistritoId() {
+        return distritoId;
+    }
+
+    public void setDistritoId(Long distritoId) {
+        this.distritoId = distritoId;
+    }
     public static PastorResponseDTO fromEntity(PastoresEntity pastor){
         PastorResponseDTO dto = new PastorResponseDTO();
 
@@ -118,12 +143,16 @@ public class PastorResponseDTO {
         dto.setEdad(pastor.getEdad());
         dto.setEsPastorDistrito(pastor.getEsPastorDistrito());
 
+        dto.setNitPastor(pastor.getNitPastor());
+
         if(pastor.getIglesia() != null){
+            dto.setIglesiaId(pastor.getIglesia().getId());
             dto.setCodigoIglesia(pastor.getIglesia().getCodigoIglesia());
             dto.setNombreIglesia(pastor.getIglesia().getNombreIglesia());
         }
 
         if(pastor.getDistrito() != null){
+            dto.setDistritoId(pastor.getDistrito().getId());
             dto.setCodigoDistrito(pastor.getDistrito().getCodigoDistrito());
             dto.setNombreDistrito(pastor.getDistrito().getNombreDistrito());
         }

@@ -23,7 +23,6 @@ const Pastores = () => {
     const [pastorEditando, setPastorEditando] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [form, setForm] = useState({
-        codigoPastor: "",
         nitPastor: "",
         nombre: "",
         apellido: "",
@@ -59,7 +58,7 @@ const Pastores = () => {
     const abrirModalCrear = () => {
         setPastorEditando(null);
         setForm({ 
-            codigoPastor: "", nitPastor: "", nombre: "", apellido: "", 
+            nitPastor: "", nombre: "", apellido: "", 
             celular: "", edad: "", esPastorDistrito: false, distritoId: "", iglesiaId: "" 
         });
         setModalError("");
@@ -69,15 +68,14 @@ const Pastores = () => {
     const abrirModalEditar = (pastor) => {
         setPastorEditando(pastor);
         setForm({
-            codigoPastor: pastor.codigoPastor || "",
             nitPastor: pastor.nitPastor || "",
             nombre: pastor.nombre || "",
             apellido: pastor.apellido || "",
             celular: pastor.celular || "",
             edad: pastor.edad || "",
             esPastorDistrito: pastor.esPastorDistrito || false,
-            distritoId: pastor.distrito ? pastor.distrito.id : "",
-            iglesiaId: pastor.iglesia ? pastor.iglesia.id : "",
+            distritoId: pastor.distritoId || "",
+            iglesiaId: pastor.iglesiaId || "",
         });
         setModalError("");
         setModalOpen(true);
@@ -100,7 +98,6 @@ const Pastores = () => {
         try {
             setModalError("");
             const payload = {
-                codigoPastor: form.codigoPastor,
                 nitPastor: form.nitPastor,
                 nombre: form.nombre,
                 apellido: form.apellido,
@@ -133,7 +130,17 @@ const Pastores = () => {
         }
     };
 
+    const rol = usuario?.rol || '';
+    const distritoIdUsuario = usuario?.distritoId || null;
+    const esPD = rol === 'PD';
+
     const pastoresFiltrados = pastores.filter((p) => {
+        if (esPD) {
+            if (!p.distrito || p.distrito.id !== parseInt(distritoIdUsuario)) {
+                return false;
+            }
+        }
+
         const busqueda = searchQuery.toLowerCase();
         return (
             (p.nombre && p.nombre.toLowerCase().includes(busqueda)) ||
@@ -241,23 +248,14 @@ const Pastores = () => {
 
                             <div style={{display: 'flex', gap: '10px'}}>
                                 <div style={{...styles.inputGroup, flex: 1}}>
-                                    <label style={styles.label}>Código Pastor</label>
-                                    <input
-                                        name="codigoPastor"
-                                        value={form.codigoPastor}
-                                        onChange={handleChange}
-                                        style={styles.input}
-                                        placeholder="Ej: P001"
-                                    />
-                                </div>
-                                <div style={{...styles.inputGroup, flex: 1}}>
                                     <label style={styles.label}>NIT</label>
                                     <input
                                         name="nitPastor"
                                         value={form.nitPastor}
                                         onChange={handleChange}
                                         style={styles.input}
-                                        placeholder="Ej: 1234567-8"
+                                        placeholder="Ej: 12345678"
+                                        maxLength="8"
                                     />
                                 </div>
                             </div>
@@ -293,7 +291,8 @@ const Pastores = () => {
                                         value={form.celular}
                                         onChange={handleChange}
                                         style={styles.input}
-                                        placeholder="Ej: 1234-5678"
+                                        placeholder="Ej: +502 12345678"
+                                        maxLength="15"
                                     />
                                 </div>
                                 <div style={{...styles.inputGroup, flex: 1}}>

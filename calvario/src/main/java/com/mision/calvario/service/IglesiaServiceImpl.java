@@ -27,9 +27,6 @@ public class IglesiaServiceImpl implements IglesiaService{
 
     @Override
     public IglesiaEntity guardar(IglesiaEntity iglesia){
-        if(iglesiaRepository.existsByCodigoIglesia(iglesia.getCodigoIglesia())){
-            throw new RuntimeException("Ya existe una iglesia con este codigo");
-        }
         if(iglesiaRepository.existsByNombreIglesia(iglesia.getNombreIglesia())){
             throw new RuntimeException("Ya existe una iglesia con este nombre");
         }
@@ -43,6 +40,7 @@ public class IglesiaServiceImpl implements IglesiaService{
             throw new RuntimeException("Este distrito no existe, crealo primero!");
         }
 
+        iglesia.setCodigoIglesia("TMP");
         IglesiaEntity savedIglesia = iglesiaRepository.save(iglesia);
         
         if (iglesia.getPastor() != null && iglesia.getPastor().getId() != null) {
@@ -52,6 +50,9 @@ public class IglesiaServiceImpl implements IglesiaService{
             pastoresRepository.save(pastor);
             savedIglesia.setPastor(pastor);
         }
+
+        savedIglesia.setCodigoIglesia("IG" + String.format("%03d", savedIglesia.getId()));
+        savedIglesia = iglesiaRepository.save(savedIglesia);
 
         return savedIglesia;
     }
@@ -87,19 +88,16 @@ public class IglesiaServiceImpl implements IglesiaService{
     if(iglesia.getNombreIglesia() == null || iglesia.getNombreIglesia().isEmpty()){
         throw new RuntimeException("El nombre de la iglesia no puede estar vacio!");
     }
-    if(iglesia.getCodigoIglesia() == null || iglesia.getCodigoIglesia().isEmpty()){
-        throw new RuntimeException("El codigo de la iglesia no puede estar vacio!");
-    }
 
-    Optional<IglesiaEntity> iglesiaCodigo = iglesiaRepository.findByCodigoIglesia(iglesia.getCodigoIglesia());
     Optional<IglesiaEntity> iglesiaNombre = iglesiaRepository.findByNombreIglesia(iglesia.getNombreIglesia());
 
-    if(iglesiaCodigo.isPresent() && iglesiaCodigo.get().getId() != iglesia.getId()){
-        throw new RuntimeException("Ya existe una iglesia con ese codigo!");
-    }
     if(iglesiaNombre.isPresent() && iglesiaNombre.get().getId() != iglesia.getId()){
         throw new RuntimeException("Ya existe una iglesia con ese Nombre!");
     }
+
+    // Mantener el código original
+    IglesiaEntity iglesiaActual = iglesiaRepository.findById(iglesia.getId()).get();
+    iglesia.setCodigoIglesia(iglesiaActual.getCodigoIglesia());
     if(distritoService.buscarPorId(iglesia.getDistrito().getId()).isEmpty()){
         throw new RuntimeException("El distrito al que intentas actualizar no existe!");
     }

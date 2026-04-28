@@ -1,5 +1,6 @@
 package com.mision.calvario.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
@@ -22,7 +23,7 @@ public class IglesiaEntity {
     @JoinColumn(name = "distrito_id")
     private DistritoEntity distrito;
 
-    @JsonManagedReference
+    @JsonIgnoreProperties("iglesia")
     @OneToOne(mappedBy = "iglesia")
     private PastoresEntity pastor;
 

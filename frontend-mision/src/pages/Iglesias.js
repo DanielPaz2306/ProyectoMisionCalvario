@@ -277,7 +277,6 @@ const estilos = {
 };
 
 const FORM_INICIAL = {
-  codigoIglesia: '',
   nombreIglesia: '',
   distritoId: '',
   pastorId: '',
@@ -431,7 +430,6 @@ export default function Iglesias() {
     // Para el pastor, buscamos en pastoresDisponibles después de cargar
     // Usamos un timeout mínimo para que el estado se actualice
     setForm({
-      codigoIglesia: iglesia.codigoIglesia || '',
       nombreIglesia: iglesia.nombreIglesia || '',
       distritoId: distrito ? String(distrito.id) : '',
       pastorId: '', // se resuelve abajo
@@ -476,7 +474,6 @@ export default function Iglesias() {
     setGuardando(true);
     try {
       const payload = {
-        codigoIglesia: form.codigoIglesia.trim() || null,
         nombreIglesia: form.nombreIglesia.trim(),
         distrito: form.distritoId ? { id: parseInt(form.distritoId, 10) } : null,
         pastor: form.pastorId ? { id: parseInt(form.pastorId, 10) } : null,
@@ -674,18 +671,6 @@ export default function Iglesias() {
             </h2>
 
             {errorModal && <div style={estilos.error}>{errorModal}</div>}
-
-            <div style={estilos.grupo}>
-              <label style={estilos.label}>Código de Iglesia</label>
-              <input
-                style={estilos.input}
-                name="codigoIglesia"
-                value={form.codigoIglesia}
-                onChange={manejarCambio}
-                placeholder="Ej. IG-001 (opcional)"
-                maxLength="10"
-              />
-            </div>
 
             <div style={estilos.grupo}>
               <label style={estilos.label}>
