@@ -53,7 +53,7 @@ const Distritos = () => {
         setDistritoEditando(distrito);
         setForm({
             nombreDistrito: distrito.nombreDistrito,
-            pastorDistrito: distrito.codigoPastorDistrito
+            pastorDistrito: distrito.pastorDistritoId
                 ? { id: distrito.pastorDistritoId }
                 : null,
         });
@@ -113,10 +113,13 @@ const handleGuardar = async () => {
         }
     };
 
-    // Filtrar pastores que pueden ser pastor de distrito
-    const pastoresDisponibles = pastores.filter(p =>
-    !p.esPastorDistrito || (distritoEditando && p.codigoPastor === distritoEditando.codigoPastorDistrito)
-    );
+    // Al editar: mostrar solo pastores que pertenecen a ESE distrito.
+    // Al crear: no hay pastores aún en el distrito nuevo, así que lista vacía.
+    const pastoresDisponibles = distritoEditando
+        ? pastores.filter(p =>
+            p.distritoId === distritoEditando.id
+          )
+        : [];
 
     const distritosFiltrados = distritos.filter((d) => 
         d.nombreDistrito.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -232,21 +235,35 @@ const handleGuardar = async () => {
                             />
                         </div>
 
-                        <div style={styles.inputGroup}>
-                            <label style={styles.label}>Pastor de Distrito</label>
-                            <select
-                                onChange={handlePastorChange}
-                                style={styles.input}
-                                value={form.pastorDistrito?.id?.toString() || ""}
-                            >
-                                <option value="">Sin asignar</option>
-                                {pastoresDisponibles.map((pastor) => (
-                                    <option key={pastor.id} value={pastor.id}>
-                                        {pastor.nombrePastor} — {pastor.codigoPastor || "Sin código"}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        {distritoEditando ? (
+                            <div style={styles.inputGroup}>
+                                <label style={styles.label}>Pastor de Distrito</label>
+                                {pastoresDisponibles.length > 0 ? (
+                                    <select
+                                        onChange={handlePastorChange}
+                                        style={styles.input}
+                                        value={form.pastorDistrito?.id?.toString() || ""}
+                                    >
+                                        <option value="">Sin asignar</option>
+                                        {pastoresDisponibles.map((pastor) => (
+                                            <option key={pastor.id} value={pastor.id}>
+                                                {pastor.nombre} {pastor.apellido} — {pastor.codigoPastor || "Sin código"}
+                                            </option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <p style={{ fontSize: '13px', color: '#888', margin: '6px 0 0 0' }}>
+                                        Este distrito aún no tiene pastores asignados. Agrega pastores al distrito primero.
+                                    </p>
+                                )}
+                            </div>
+                        ) : (
+                            <div style={{ ...styles.inputGroup, backgroundColor: '#f9f9f9', borderRadius: '8px', padding: '12px', border: '1px solid #eee' }}>
+                                <p style={{ fontSize: '13px', color: '#888', margin: 0 }}>
+                                    💡 El Pastor de Distrito se puede asignar una vez que el distrito haya sido creado y tenga pastores.
+                                </p>
+                            </div>
+                        )}
 
                         <div style={styles.modalButtons}>
                             <button onClick={cerrarModal} style={styles.btnCancelar}>

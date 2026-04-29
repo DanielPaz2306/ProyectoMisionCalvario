@@ -2,8 +2,11 @@ package com.mision.calvario.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import com.mision.calvario.dto.IglesiaRequestDTO;
 import com.mision.calvario.dto.IglesiaResponseDTO;
+import com.mision.calvario.entity.DistritoEntity;
 import com.mision.calvario.entity.IglesiaEntity;
+import com.mision.calvario.entity.PastoresEntity;
 import com.mision.calvario.service.IglesiaService;
 import java.util.List;
 
@@ -74,14 +77,38 @@ public class IglesiaController {
 
     // POST, PUT, DELETE — sin cambios
     @PostMapping
-    public IglesiaEntity guardar(@RequestBody IglesiaEntity iglesia) {
-        return iglesiaService.guardar(iglesia);
+    public IglesiaResponseDTO guardar(@RequestBody IglesiaRequestDTO request) {
+        IglesiaEntity iglesia = new IglesiaEntity();
+        iglesia.setNombreIglesia(request.getNombreIglesia());
+        if (request.getDistritoId() != null) {
+            DistritoEntity distrito = new DistritoEntity();
+            distrito.setId(request.getDistritoId());
+            iglesia.setDistrito(distrito);
+        }
+        if (request.getPastorId() != null) {
+            PastoresEntity pastor = new PastoresEntity();
+            pastor.setId(request.getPastorId());
+            iglesia.setPastor(pastor);
+        }
+        return IglesiaResponseDTO.fromEntity(iglesiaService.guardar(iglesia));
     }
 
     @PutMapping("/{id}")
-    public IglesiaEntity actualizar(@PathVariable Long id, @RequestBody IglesiaEntity iglesia) {
+    public IglesiaResponseDTO actualizar(@PathVariable Long id, @RequestBody IglesiaRequestDTO request) {
+        IglesiaEntity iglesia = new IglesiaEntity();
         iglesia.setId(id);
-        return iglesiaService.actualizarIglesia(iglesia);
+        iglesia.setNombreIglesia(request.getNombreIglesia());
+        if (request.getDistritoId() != null) {
+            DistritoEntity distrito = new DistritoEntity();
+            distrito.setId(request.getDistritoId());
+            iglesia.setDistrito(distrito);
+        }
+        if (request.getPastorId() != null) {
+            PastoresEntity pastor = new PastoresEntity();
+            pastor.setId(request.getPastorId());
+            iglesia.setPastor(pastor);
+        }
+        return IglesiaResponseDTO.fromEntity(iglesiaService.actualizarIglesia(iglesia));
     }
 
     @DeleteMapping("/{id}")

@@ -7,6 +7,7 @@ public class DistritoResponseDTO {
     private Long id;
     private String codigoDistrito;
     private String nombreDistrito;
+    private Long pastorDistritoId;
     private String codigoPastorDistrito;
     private String nombrePastorDistrito; //nombre mas apellido tambien
     private String celularPastorDistrito;
@@ -27,6 +28,13 @@ public class DistritoResponseDTO {
     }
     public void setNombreDistrito(String nombreDistrito) {
         this.nombreDistrito = nombreDistrito;
+    }
+
+    public Long getPastorDistritoId() {
+        return pastorDistritoId;
+    }
+    public void setPastorDistritoId(Long pastorDistritoId) {
+        this.pastorDistritoId = pastorDistritoId;
     }
 
     public String getCodigoPastorDistrito() {
@@ -84,6 +92,7 @@ public class DistritoResponseDTO {
         }
 
         if(distrito.getPastorDistrito() != null){
+            dto.setPastorDistritoId(distrito.getPastorDistrito().getId());
             dto.setCodigoPastorDistrito(distrito.getPastorDistrito().getCodigoPastor());
             dto.setNombrePastorDistrito(distrito.getPastorDistrito().getNombre() + " " + distrito.getPastorDistrito().getApellido());
             dto.setCelularPastorDistrito(distrito.getPastorDistrito().getCelular());

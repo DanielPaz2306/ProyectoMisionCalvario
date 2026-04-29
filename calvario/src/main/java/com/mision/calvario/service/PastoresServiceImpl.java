@@ -37,13 +37,6 @@ public class PastoresServiceImpl implements PastoresService{
 
     @Override
     public PastoresEntity guardar(PastoresEntity pastor){
-    // solo validar nit si viene en el request
-    if(pastor.getNitPastor() != null){
-        // necesitarías agregar este método al repository
-        if(pastoresRepository.existsByNitPastor(pastor.getNitPastor())){
-            throw new RuntimeException("Ya existe un pastor con ese NIT!");
-        }
-    }
 
     if(pastor.getNombre() == null || pastor.getNombre().isEmpty()){
         throw new RuntimeException("El nombre no puede estar vacio!");
@@ -55,12 +48,6 @@ public class PastoresServiceImpl implements PastoresService{
         throw new RuntimeException("Edad inválida");
     }
 
-
-
-    // solo validar celular si viene en el request
-    if(pastor.getCelular() != null && pastoresRepository.existsByCelular(pastor.getCelular())){
-        throw new RuntimeException("Ya existe un pastor con ese Celular!");
-    }
 
     // validar que el distrito existe si se envió
     if(pastor.getDistrito() != null){
@@ -166,26 +153,12 @@ public class PastoresServiceImpl implements PastoresService{
         }
     }
 
-    // solo validar nit si viene en el request
-    if(pastor.getNitPastor() != null){
-        Optional<PastoresEntity> pastorNit = pastoresRepository.findByNitPastor(pastor.getNitPastor());
-        if(pastorNit.isPresent() && pastorNit.get().getId() != pastor.getId()){
-            throw new RuntimeException("Ya existe un pastor con ese NIT!");
-        }
-    }
-
+    // Preservar el código autogenerado (no modificable por el usuario)
     PastoresEntity pastorActual = pastoresRepository.findById(pastor.getId()).get();
     pastor.setCodigoPastor(pastorActual.getCodigoPastor());
 
-    // solo buscar si no es null
-    if(pastor.getCelular() != null){
-        Optional<PastoresEntity> pastorCelular = pastoresRepository.findByCelular(pastor.getCelular());
-        if(pastorCelular.isPresent() && pastorCelular.get().getId() != pastor.getId()){
-            throw new RuntimeException("Ya existe un pastor con este celular!");
-        }
-    }
-
     // solo buscar iglesia si no es null
+
     if(pastor.getIglesia() != null){
         if(iglesiaService.buscarPorId(pastor.getIglesia().getId()).isEmpty()){
             throw new RuntimeException("Esta iglesia no existe!");

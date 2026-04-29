@@ -475,8 +475,8 @@ export default function Iglesias() {
     try {
       const payload = {
         nombreIglesia: form.nombreIglesia.trim(),
-        distrito: form.distritoId ? { id: parseInt(form.distritoId, 10) } : null,
-        pastor: form.pastorId ? { id: parseInt(form.pastorId, 10) } : null,
+        distritoId: form.distritoId ? parseInt(form.distritoId, 10) : null,
+        pastorId: form.pastorId ? parseInt(form.pastorId, 10) : null,
       };
 
       if (modoEdicion) {

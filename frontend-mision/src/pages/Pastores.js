@@ -22,6 +22,7 @@ const Pastores = () => {
     const [modalError, setModalError] = useState("");
     const [pastorEditando, setPastorEditando] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [soloPD, setSoloPD] = useState(false);
     const [form, setForm] = useState({
         nitPastor: "",
         nombre: "",
@@ -142,9 +143,12 @@ const Pastores = () => {
         }
 
         const busqueda = searchQuery.toLowerCase();
+        const nombreCompleto = `${p.nombre || ''} ${p.apellido || ''}`.toLowerCase();
+
+        if (soloPD && !p.esPastorDistrito) return false;
+
         return (
-            (p.nombre && p.nombre.toLowerCase().includes(busqueda)) ||
-            (p.apellido && p.apellido.toLowerCase().includes(busqueda)) ||
+            nombreCompleto.includes(busqueda) ||
             (p.codigoPastor && p.codigoPastor.toLowerCase().includes(busqueda)) ||
             (p.nitPastor && p.nitPastor.toLowerCase().includes(busqueda))
         );
@@ -180,6 +184,17 @@ const Pastores = () => {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             style={styles.searchInput}
                         />
+                        <button
+                            onClick={() => setSoloPD(!soloPD)}
+                            style={{
+                                ...styles.btnFiltroToggle,
+                                backgroundColor: soloPD ? '#1976d2' : '#f4f6f9',
+                                color: soloPD ? '#ffffff' : '#555',
+                                border: soloPD ? '1px solid #1565c0' : '1px solid #e0e0e0',
+                            }}
+                        >
+                            {soloPD ? '🟦 Solo PD' : '🟦 Pastor de Distrito'}
+                        </button>
                         {usuario?.rol === "ADMIN" && (
                             <button onClick={abrirModalCrear} style={styles.btnNuevo}>
                                 + Nuevo Pastor
@@ -415,6 +430,15 @@ const styles = {
         fontSize: "14px",
         fontWeight: "600",
         cursor: "pointer",
+        letterSpacing: "0.3px",
+    },
+    btnFiltroToggle: {
+        borderRadius: "8px",
+        padding: "10px 16px",
+        fontSize: "14px",
+        fontWeight: "600",
+        cursor: "pointer",
+        transition: "all 0.2s",
         letterSpacing: "0.3px",
     },
     cardsContainer: {
