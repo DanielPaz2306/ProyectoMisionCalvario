@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getDistritos, getIglesias, getPastores, getDiezmos } from "../services/apiService";
+import { getDistritos, getIglesias, getPastores, getDiezmos, getDiezmosByPastor, getIglesiasByDistrito } from "../services/apiService";
 import Layout from "../components/Layout";
 
 const Dashboard = () => {
@@ -40,6 +40,25 @@ const Dashboard = () => {
                         iglesias: Array.isArray(iglesias) ? iglesias.length : 0,
                         pastores: Array.isArray(pastores) ? pastores.length : 0,
                     });
+                } else if (usuario?.rol === "PD" && usuario?.distritoId) {
+                    const [iglesias, pastores] = await Promise.all([
+                        getIglesiasByDistrito(usuario.distritoId),
+                        getPastores(),
+                    ]);
+                    const pastoresDistrito = (Array.isArray(pastores) ? pastores : []).filter(
+                        p => p.distritoId === usuario.distritoId || String(p.distritoId) === String(usuario.distritoId)
+                    );
+                    setConteos({
+                        iglesias: Array.isArray(iglesias) ? iglesias.length : 0,
+                        pastores: pastoresDistrito.length,
+                    });
+                } else if (usuario?.rol === "PASTOR" && usuario?.pastorId) {
+                    const misDiezmos = await getDiezmosByPastor(usuario.pastorId);
+                    const total = Array.isArray(misDiezmos) ? misDiezmos.reduce((acc, d) => acc + d.monto, 0) : 0;
+                    setConteos({
+                        diezmos: Array.isArray(misDiezmos) ? misDiezmos.length : 0,
+                        totalDiezmos: total,
+                    });
                 }
             } catch (error) {
                 console.error("Error cargando conteos:", error);
@@ -66,13 +85,13 @@ const Dashboard = () => {
                 ];
             case "PD":
                 return [
-                    { titulo: "Iglesias de mi Distrito", valor: "—" },
-                    { titulo: "Pastores de mi Distrito", valor: "—" },
-                    { titulo: "Diezmos de mi Distrito", valor: "—" },
+                    { titulo: "Iglesias de mi Distrito", valor: conteos.iglesias || 0 },
+                    { titulo: "Pastores de mi Distrito", valor: conteos.pastores || 0 },
                 ];
             case "PASTOR":
                 return [
-                    { titulo: "Mis Diezmos", valor: "—" },
+                    { titulo: "Mis Diezmos", valor: conteos.diezmos || 0 },
+                    { titulo: "Total Aportado", valor: conteos.totalDiezmos != null ? new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(conteos.totalDiezmos) : 'Q0.00' },
                 ];
             default:
                 return [];

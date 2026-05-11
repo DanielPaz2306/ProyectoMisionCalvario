@@ -137,18 +137,21 @@ const Pastores = () => {
 
     const pastoresFiltrados = pastores.filter((p) => {
         if (esPD) {
-            if (!p.distrito || p.distrito.id !== parseInt(distritoIdUsuario)) {
+            if (String(p.distritoId) !== String(distritoIdUsuario)) {
                 return false;
             }
         }
 
-        const busqueda = searchQuery.toLowerCase();
+        const busqueda = searchQuery.toLowerCase().trim();
+        const terminos = busqueda.split(/\s+/).filter(Boolean);
         const nombreCompleto = `${p.nombre || ''} ${p.apellido || ''}`.toLowerCase();
 
         if (soloPD && !p.esPastorDistrito) return false;
 
+        const matchNombre = terminos.length === 0 || terminos.every(term => nombreCompleto.includes(term));
+
         return (
-            nombreCompleto.includes(busqueda) ||
+            matchNombre ||
             (p.codigoPastor && p.codigoPastor.toLowerCase().includes(busqueda)) ||
             (p.nitPastor && p.nitPastor.toLowerCase().includes(busqueda))
         );
@@ -184,7 +187,8 @@ const Pastores = () => {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             style={styles.searchInput}
                         />
-                        <button
+                        {!esPD && (
+                          <button
                             onClick={() => setSoloPD(!soloPD)}
                             style={{
                                 ...styles.btnFiltroToggle,
@@ -192,9 +196,10 @@ const Pastores = () => {
                                 color: soloPD ? '#ffffff' : '#555',
                                 border: soloPD ? '1px solid #1565c0' : '1px solid #e0e0e0',
                             }}
-                        >
+                          >
                             {soloPD ? '🟦 Solo PD' : '🟦 Pastor de Distrito'}
-                        </button>
+                          </button>
+                        )}
                         {usuario?.rol === "ADMIN" && (
                             <button onClick={abrirModalCrear} style={styles.btnNuevo}>
                                 + Nuevo Pastor

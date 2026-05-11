@@ -88,5 +88,5 @@ export const crearDiezmo = (diezmo) =>
 export const actualizarDiezmo = (id, diezmo) =>
     axios.put(`${api}/diezmos/${id}`, diezmo, { headers: getHeaders() }).then((r) => r.data);
 
-export const eliminarDiezmo = (id) =>
-    axios.delete(`${api}/diezmos/${id}`, { headers: getHeaders() }).then((r) => r.data);
+export const verificarDiezmo = (id, diezmoActualizado) =>
+    axios.put(`${api}/diezmos/${id}`, diezmoActualizado, { headers: getHeaders() }).then((r) => r.data);

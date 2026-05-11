@@ -3,7 +3,6 @@ package com.mision.calvario.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mision.calvario.dto.DiezmoRequestDTO;
 import com.mision.calvario.dto.DiezmoResponseDTO;
 import com.mision.calvario.entity.DiezmoEntity;
 import com.mision.calvario.entity.IglesiaEntity;
@@ -102,19 +102,43 @@ public class DiezmoController {
     }
 
     @PostMapping
-    public DiezmoResponseDTO guardar(@RequestBody DiezmoEntity diezmo) {
+    public DiezmoResponseDTO guardar(@RequestBody DiezmoRequestDTO request) {
+        DiezmoEntity diezmo = new DiezmoEntity();
+        mapRequestToEntity(request, diezmo);
         return DiezmoResponseDTO.fromEntity(diezmoService.guardar(diezmo));
     }
 
     @PutMapping("/{id}")
-    public DiezmoResponseDTO actualizar(@PathVariable Long id, @RequestBody DiezmoEntity diezmo) {
+    public DiezmoResponseDTO actualizar(@PathVariable Long id, @RequestBody DiezmoRequestDTO request) {
+        DiezmoEntity diezmo = new DiezmoEntity();
         diezmo.setId(id);
+        mapRequestToEntity(request, diezmo);
         return DiezmoResponseDTO.fromEntity(diezmoService.actualizar(diezmo));
     }
 
-    @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Long id) {
-        diezmoService.eliminar(id);
+    private void mapRequestToEntity(DiezmoRequestDTO request, DiezmoEntity diezmo) {
+        diezmo.setMes(request.getMes());
+        diezmo.setAnio(request.getAnio());
+        diezmo.setFechaPago(request.getFechaPago());
+        diezmo.setNumerotransaccion(request.getNumerotransaccion());
+        diezmo.setNumeroCuenta(request.getNumeroCuenta());
+        diezmo.setBanco(request.getBanco());
+        diezmo.setMonto(request.getMonto());
+        diezmo.setObservaciones(request.getObservaciones());
+        diezmo.setUrlComprobante(request.getUrlComprobante());
+        diezmo.setVerificado(request.isVerificado());
+
+        if (request.getPastorId() != null) {
+            PastoresEntity pastor = new PastoresEntity();
+            pastor.setId(request.getPastorId());
+            diezmo.setPastor(pastor);
+        }
+
+        if (request.getIglesiaId() != null) {
+            IglesiaEntity iglesia = new IglesiaEntity();
+            iglesia.setId(request.getIglesiaId());
+            diezmo.setIglesia(iglesia);
+        }
     }
 
 }

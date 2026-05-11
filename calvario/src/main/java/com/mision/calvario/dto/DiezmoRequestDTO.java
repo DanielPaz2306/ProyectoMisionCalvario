@@ -1,91 +1,44 @@
-package com.mision.calvario.entity;
+package com.mision.calvario.dto;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 
+public class DiezmoRequestDTO {
 
-@Entity
-@Table(name = "diezmos")
-public class DiezmoEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "pastor_id", nullable = false)
-    private PastoresEntity pastor;
-
-    @ManyToOne
-    @JoinColumn(name = "iglesia_id", nullable = true)
-    private IglesiaEntity iglesia;
-
-    @Column(name = "nitPastor", nullable = true, length = 10)
-    private String nitPastor;
-
-    @Column(name = "mes", nullable = false)
+    private Long pastorId;
+    private Long iglesiaId;
     private int mes;
-
-    @Column(name = "anio", nullable = false)
     private int anio;
-
-    @Column(name = "fechapago", nullable = false)
     private LocalDate fechaPago;
-
-    @Column(name = "numerotransaccion", nullable = false, unique = true, length = 50)
     private String numerotransaccion;
-
-    @Column(name = "numeroCuenta", nullable = false, length = 30)
     private String numeroCuenta;
-
-    @Column(name = "banco", nullable = false, length = 50)
     private String banco;
-
-    @Column(name = "monto", nullable = false)
     private double monto;
-
-    @Column(name = "observaciones", nullable = true)
     private String observaciones;
-
-    @Column(name = "urlComprobante", nullable = true, length = 500)
     private String urlComprobante;
+    private boolean verificado;
 
-    @Column(name = "verificado", nullable = false)
-    private boolean verificado = false;
+    public DiezmoRequestDTO() {}
 
-    public DiezmoEntity (){}
-
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
+    public Long getPastorId() {
+        return pastorId;
     }
 
-    public PastoresEntity getPastor() {
-        return pastor;
-    }
-    public void setPastor(PastoresEntity pastor) {
-        this.pastor = pastor;
+    public void setPastorId(Long pastorId) {
+        this.pastorId = pastorId;
     }
 
-    public IglesiaEntity getIglesia() {
-        return iglesia;
-    }
-    public void setIglesia(IglesiaEntity iglesia) {
-        this.iglesia = iglesia;
+    public Long getIglesiaId() {
+        return iglesiaId;
     }
 
-    public String getNitPastor() {
-        return nitPastor;
-    }
-    public void setNitPastor(String nitPastor) {
-        this.nitPastor = nitPastor;
+    public void setIglesiaId(Long iglesiaId) {
+        this.iglesiaId = iglesiaId;
     }
 
     public int getMes() {
         return mes;
     }
+
     public void setMes(int mes) {
         this.mes = mes;
     }
@@ -93,6 +46,7 @@ public class DiezmoEntity {
     public int getAnio() {
         return anio;
     }
+
     public void setAnio(int anio) {
         this.anio = anio;
     }
@@ -100,6 +54,7 @@ public class DiezmoEntity {
     public LocalDate getFechaPago() {
         return fechaPago;
     }
+
     public void setFechaPago(LocalDate fechaPago) {
         this.fechaPago = fechaPago;
     }
@@ -107,6 +62,7 @@ public class DiezmoEntity {
     public String getNumerotransaccion() {
         return numerotransaccion;
     }
+
     public void setNumerotransaccion(String numerotransaccion) {
         this.numerotransaccion = numerotransaccion;
     }
@@ -114,6 +70,7 @@ public class DiezmoEntity {
     public String getNumeroCuenta() {
         return numeroCuenta;
     }
+
     public void setNumeroCuenta(String numeroCuenta) {
         this.numeroCuenta = numeroCuenta;
     }
@@ -121,6 +78,7 @@ public class DiezmoEntity {
     public String getBanco() {
         return banco;
     }
+
     public void setBanco(String banco) {
         this.banco = banco;
     }
@@ -128,6 +86,7 @@ public class DiezmoEntity {
     public double getMonto() {
         return monto;
     }
+
     public void setMonto(double monto) {
         this.monto = monto;
     }
@@ -135,6 +94,7 @@ public class DiezmoEntity {
     public String getObservaciones() {
         return observaciones;
     }
+
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
     }
@@ -142,6 +102,7 @@ public class DiezmoEntity {
     public String getUrlComprobante() {
         return urlComprobante;
     }
+
     public void setUrlComprobante(String urlComprobante) {
         this.urlComprobante = urlComprobante;
     }
@@ -149,8 +110,8 @@ public class DiezmoEntity {
     public boolean isVerificado() {
         return verificado;
     }
+
     public void setVerificado(boolean verificado) {
         this.verificado = verificado;
     }
-
 }

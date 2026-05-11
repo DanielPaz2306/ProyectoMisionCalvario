@@ -20,6 +20,7 @@ public class DiezmoResponseDTO {
     private double monto;
     private String observaciones;
     private String urlComprobante;
+    private boolean verificado;
 
     public DiezmoResponseDTO(){}
 
@@ -68,6 +69,9 @@ public class DiezmoResponseDTO {
     public String getUrlComprobante() { return urlComprobante; }
     public void setUrlComprobante(String urlComprobante) { this.urlComprobante = urlComprobante; }
 
+    public boolean isVerificado() { return verificado; }
+    public void setVerificado(boolean verificado) { this.verificado = verificado; }
+
 
     public static DiezmoResponseDTO fromEntity(DiezmoEntity diezmo){
 
@@ -83,6 +87,7 @@ public class DiezmoResponseDTO {
         dto.setMonto(diezmo.getMonto());
         dto.setObservaciones(diezmo.getObservaciones());
         dto.setUrlComprobante(diezmo.getUrlComprobante());
+        dto.setVerificado(diezmo.isVerificado());
 
         dto.setCodigoPastor(diezmo.getPastor().getCodigoPastor());
         dto.setNombrePastor(diezmo.getPastor().getNombre() + " " + diezmo.getPastor().getApellido());

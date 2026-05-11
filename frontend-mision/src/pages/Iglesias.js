@@ -394,10 +394,13 @@ export default function Iglesias() {
       String(ig.codigoDistrito) === filtroDistrito ||
       ig.nombreDistrito === filtroDistrito;
 
-    const busqueda = filtroPastor.toLowerCase();
+    const busqueda = filtroPastor.toLowerCase().trim();
+    const terminos = busqueda.split(/\s+/).filter(Boolean);
+    const matchNombrePastor = terminos.length === 0 || 
+      (ig.nombrePastor && terminos.every(term => ig.nombrePastor.toLowerCase().includes(term)));
+
     const matchPastor =
-      filtroPastor === '' ||
-      (ig.nombrePastor && ig.nombrePastor.toLowerCase().includes(busqueda)) ||
+      matchNombrePastor ||
       (ig.codigoPastor && ig.codigoPastor.toLowerCase().includes(busqueda));
 
     return matchDistrito && matchPastor;
@@ -551,8 +554,8 @@ export default function Iglesias() {
 
       {/* Filtros */}
       <div style={estilos.filtros}>
-        {/* Filtro por distrito — no mostrar a PASTOR */}
-        {!esPastor && (
+        {/* Filtro por distrito — no mostrar a PASTOR ni PD */}
+        {!esPastor && !esPD && (
           <select
             style={estilos.selectFiltro}
             value={filtroDistrito}
