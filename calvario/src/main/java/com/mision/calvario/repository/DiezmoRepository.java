@@ -17,15 +17,24 @@ import java.util.List;
 @Repository
 public interface DiezmoRepository extends JpaRepository<DiezmoEntity, Long> {
 
-    Optional<DiezmoEntity> findByNumerotransaccion(String numerotransaccion); //Muestra un diezmo por su numero de transferencia
+    @Override
+    @Query("SELECT d FROM DiezmoEntity d LEFT JOIN FETCH d.pastor LEFT JOIN FETCH d.iglesia")
+    List<DiezmoEntity> findAll();
+
+    @Query("SELECT d FROM DiezmoEntity d LEFT JOIN FETCH d.pastor LEFT JOIN FETCH d.iglesia WHERE d.numerotransaccion = :num")
+    Optional<DiezmoEntity> findByNumerotransaccion(@Param("num") String numerotransaccion);
     
-    List<DiezmoEntity> findByPastor(PastoresEntity pastor); //Muestra el historial de un pastor
+    @Query("SELECT d FROM DiezmoEntity d LEFT JOIN FETCH d.pastor LEFT JOIN FETCH d.iglesia WHERE d.pastor = :pastor")
+    List<DiezmoEntity> findByPastor(@Param("pastor") PastoresEntity pastor);
 
-    List<DiezmoEntity> findByIglesia(IglesiaEntity iglesia);
+    @Query("SELECT d FROM DiezmoEntity d LEFT JOIN FETCH d.pastor LEFT JOIN FETCH d.iglesia WHERE d.iglesia = :iglesia")
+    List<DiezmoEntity> findByIglesia(@Param("iglesia") IglesiaEntity iglesia);
 
-    List<DiezmoEntity> findByPastorAndMesAndAnio(PastoresEntity pastor, int mes, int anio); //Para reporte de pastor en un periodo especifico
+    @Query("SELECT d FROM DiezmoEntity d LEFT JOIN FETCH d.pastor LEFT JOIN FETCH d.iglesia WHERE d.pastor = :pastor AND d.mes = :mes AND d.anio = :anio")
+    List<DiezmoEntity> findByPastorAndMesAndAnio(@Param("pastor") PastoresEntity pastor, @Param("mes") int mes, @Param("anio") int anio);
 
-    List<DiezmoEntity> findByMesAndAnio(int mes, int anio); //Para un reporte de diezmos en un periodo de tiempo
+    @Query("SELECT d FROM DiezmoEntity d LEFT JOIN FETCH d.pastor LEFT JOIN FETCH d.iglesia WHERE d.mes = :mes AND d.anio = :anio")
+    List<DiezmoEntity> findByMesAndAnio(@Param("mes") int mes, @Param("anio") int anio);
 
     @Query("SELECT SUM(d.monto) FROM DiezmoEntity d WHERE d.pastor = :pastor")
     Double totalMontoPorPastor(@Param ("pastor") PastoresEntity pastor); //PARA SABER EL TOTAL DIEZMADO POR UN PASTOR

@@ -33,6 +33,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration config = new CorsConfiguration();
                 config.addAllowedOrigin("http://localhost:3000");
+                config.addAllowedOrigin("https://nice-hill-024fcf610.7.azurestaticapps.net");
                 config.addAllowedMethod("*");
                 config.addAllowedHeader("*");
                 config.setAllowCredentials(true);

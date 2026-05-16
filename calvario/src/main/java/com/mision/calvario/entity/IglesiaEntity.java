@@ -19,12 +19,12 @@ public class IglesiaEntity {
     @Column(name = "nombreiglesia", nullable = false, length = 99)
     private String nombreIglesia;  // ← camelCase
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "distrito_id")
     private DistritoEntity distrito;
 
     @JsonIgnoreProperties("iglesia")
-    @OneToOne(mappedBy = "iglesia")
+    @OneToOne(mappedBy = "iglesia", fetch = FetchType.LAZY)
     private PastoresEntity pastor;
 
     public IglesiaEntity() {

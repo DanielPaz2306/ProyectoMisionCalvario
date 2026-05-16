@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.mision.calvario.service.PastoresService;
 
 @RestController
 @RequestMapping("/api/pastores")
+@Transactional(readOnly = true)
 public class PastoresController {
 
     @Autowired
@@ -100,17 +102,20 @@ public class PastoresController {
     }
 
     @PostMapping
-    public PastoresEntity guardar(@RequestBody PastoresEntity pastor){
-        return pastoresService.guardar(pastor);
+    @Transactional
+    public PastorResponseDTO guardar(@RequestBody PastoresEntity pastor){
+        return PastorResponseDTO.fromEntity(pastoresService.guardar(pastor));
     }
 
     @PutMapping("/{id}")
-    public PastoresEntity actualizar(@PathVariable Long id, @RequestBody PastoresEntity pastor){
+    @Transactional
+    public PastorResponseDTO actualizar(@PathVariable Long id, @RequestBody PastoresEntity pastor){
         pastor.setId(id);
-        return pastoresService.actualizar(pastor);
+        return PastorResponseDTO.fromEntity(pastoresService.actualizar(pastor));
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public void eliminar(@PathVariable Long id){
         pastoresService.eliminar(id);
     }

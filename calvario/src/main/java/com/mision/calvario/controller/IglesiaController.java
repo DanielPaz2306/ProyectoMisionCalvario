@@ -2,6 +2,7 @@ package com.mision.calvario.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 import com.mision.calvario.dto.IglesiaRequestDTO;
 import com.mision.calvario.dto.IglesiaResponseDTO;
 import com.mision.calvario.entity.DistritoEntity;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/iglesias")
+@Transactional(readOnly = true)
 public class IglesiaController {
 
     @Autowired
@@ -77,6 +79,7 @@ public class IglesiaController {
 
     // POST, PUT, DELETE — sin cambios
     @PostMapping
+    @Transactional
     public IglesiaResponseDTO guardar(@RequestBody IglesiaRequestDTO request) {
         IglesiaEntity iglesia = new IglesiaEntity();
         iglesia.setNombreIglesia(request.getNombreIglesia());
@@ -94,6 +97,7 @@ public class IglesiaController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public IglesiaResponseDTO actualizar(@PathVariable Long id, @RequestBody IglesiaRequestDTO request) {
         IglesiaEntity iglesia = new IglesiaEntity();
         iglesia.setId(id);
@@ -112,6 +116,7 @@ public class IglesiaController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public void eliminar(@PathVariable Long id) {
         iglesiaService.eliminarIglesia(id);
     }

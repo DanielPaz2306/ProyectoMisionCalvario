@@ -32,12 +32,12 @@ public class PastoresEntity {
     private String nitPastor;
 
     @JsonIgnoreProperties("pastor")
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "iglesia_id", nullable = true)
     private IglesiaEntity iglesia;
 
     @JsonIgnoreProperties({"pastorDistrito", "pastores"})
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "distrito_id")
     private DistritoEntity distrito;
 

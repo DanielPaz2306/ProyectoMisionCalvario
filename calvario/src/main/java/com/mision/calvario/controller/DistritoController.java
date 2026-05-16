@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.mision.calvario.dto.DistritoResponseDTO;
 import com.mision.calvario.entity.DistritoEntity;
@@ -11,6 +12,7 @@ import com.mision.calvario.service.DistritoService;
 
 @RestController
 @RequestMapping("/api/distritos")
+@Transactional(readOnly = true)
 public class DistritoController {
 
     @Autowired
@@ -57,19 +59,22 @@ public class DistritoController {
                 .orElseThrow(() -> new RuntimeException("Distrito no encontrado con código: " + codigo));
     }
 
-    // POST, PUT, DELETE — sin cambios
+    // POST, PUT, DELETE — ahora retornan DTOs
     @PostMapping
-    public DistritoEntity guardar(@RequestBody DistritoEntity distrito) {
-        return distritoService.guardar(distrito);
+    @Transactional
+    public DistritoResponseDTO guardar(@RequestBody DistritoEntity distrito) {
+        return DistritoResponseDTO.fromEntity(distritoService.guardar(distrito));
     }
 
     @PutMapping("/{id}")
-    public DistritoEntity actualizar(@PathVariable Long id, @RequestBody DistritoEntity distrito) {
+    @Transactional
+    public DistritoResponseDTO actualizar(@PathVariable Long id, @RequestBody DistritoEntity distrito) {
         distrito.setId(id);
-        return distritoService.actualizar(distrito);
+        return DistritoResponseDTO.fromEntity(distritoService.actualizar(distrito));
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public void eliminar(@PathVariable Long id) {
         distritoService.eliminar(id);
     }

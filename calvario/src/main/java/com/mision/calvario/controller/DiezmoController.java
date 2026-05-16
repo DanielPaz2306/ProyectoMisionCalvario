@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.mision.calvario.dto.DiezmoRequestDTO;
 import com.mision.calvario.dto.DiezmoResponseDTO;
@@ -20,6 +21,7 @@ import com.mision.calvario.service.DiezmoService;
 
 @RestController
 @RequestMapping("api/diezmos")
+@Transactional(readOnly = true)
 public class DiezmoController {
 
 
@@ -102,6 +104,7 @@ public class DiezmoController {
     }
 
     @PostMapping
+    @Transactional
     public DiezmoResponseDTO guardar(@RequestBody DiezmoRequestDTO request) {
         DiezmoEntity diezmo = new DiezmoEntity();
         mapRequestToEntity(request, diezmo);
@@ -109,6 +112,7 @@ public class DiezmoController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public DiezmoResponseDTO actualizar(@PathVariable Long id, @RequestBody DiezmoRequestDTO request) {
         DiezmoEntity diezmo = new DiezmoEntity();
         diezmo.setId(id);

@@ -48,22 +48,25 @@ public class PastoresServiceImpl implements PastoresService{
         throw new RuntimeException("Edad inválida");
     }
 
-
-    // validar que el distrito existe si se envió
-    if(pastor.getDistrito() != null){
-        if(distritoService.buscarPorId(pastor.getDistrito().getId()).isEmpty()){
-            throw new RuntimeException("Este distrito no existe, crealo primero!");
-        }
+    // Resolver distrito: cargar entidad real desde la BD
+    if(pastor.getDistrito() != null && pastor.getDistrito().getId() != null){
+        DistritoEntity distritoReal = distritoRepository.findById(pastor.getDistrito().getId())
+            .orElseThrow(() -> new RuntimeException("Este distrito no existe, crealo primero!"));
+        pastor.setDistrito(distritoReal);
+    } else {
+        pastor.setDistrito(null);
     }
 
-    // validar iglesia solo si viene en el request
-    if(pastor.getIglesia() != null){
-        if(iglesiaService.buscarPorId(pastor.getIglesia().getId()).isEmpty()){
-            throw new RuntimeException("Esta iglesia no existe!");
-        }
-        if(iglesiaService.tienePastor(pastor.getIglesia()) != null){
+    // Resolver iglesia: cargar entidad real desde la BD
+    if(pastor.getIglesia() != null && pastor.getIglesia().getId() != null){
+        IglesiaEntity iglesiaReal = iglesiaRepository.findById(pastor.getIglesia().getId())
+            .orElseThrow(() -> new RuntimeException("Esta iglesia no existe!"));
+        if(iglesiaService.tienePastor(iglesiaReal) != null){
             throw new RuntimeException("Esta iglesia ya tiene un pastor asignado!");
         }
+        pastor.setIglesia(iglesiaReal);
+    } else {
+        pastor.setIglesia(null);
     }
 
     // validar pastor de distrito
@@ -80,12 +83,9 @@ public class PastoresServiceImpl implements PastoresService{
     pastorGuardado = pastoresRepository.save(pastorGuardado);
 
     if(pastor.getEsPastorDistrito() == true && pastor.getDistrito() != null){
-        System.out.println("=== Asignando pastor de distrito ===");
-        DistritoEntity distrito = distritoService.buscarPorId(pastor.getDistrito().getId()).get();
-        System.out.println("Distrito encontrado: " + distrito.getNombreDistrito());
+        DistritoEntity distrito = pastor.getDistrito();
         distrito.setPastorDistrito(pastorGuardado);
         distritoRepository.save(distrito);
-        System.out.println("Distrito actualizado");
     }
 
     return pastorGuardado;
@@ -147,26 +147,34 @@ public class PastoresServiceImpl implements PastoresService{
     if(pastor.getEdad() < 1){
         throw new RuntimeException("Edad inválida");
     }
-    if(pastor.getDistrito() != null){
-        if(distritoService.buscarPorId(pastor.getDistrito().getId()).isEmpty()){
-            throw new RuntimeException("Este distrito no existe, crealo primero!");
-        }
-    }
 
-    // Preservar el código autogenerado (no modificable por el usuario)
+    // Cargar el pastor actual de la BD (entidad managed)
     PastoresEntity pastorActual = pastoresRepository.findById(pastor.getId()).get();
+    
+    // Preservar el código autogenerado
     pastor.setCodigoPastor(pastorActual.getCodigoPastor());
 
-    // solo buscar iglesia si no es null
+    // Resolver distrito: cargar la entidad real desde la BD
+    if(pastor.getDistrito() != null && pastor.getDistrito().getId() != null){
+        DistritoEntity distritoReal = distritoRepository.findById(pastor.getDistrito().getId())
+            .orElseThrow(() -> new RuntimeException("Este distrito no existe, crealo primero!"));
+        pastor.setDistrito(distritoReal);
+    } else {
+        pastor.setDistrito(null);
+    }
 
-    if(pastor.getIglesia() != null){
-        if(iglesiaService.buscarPorId(pastor.getIglesia().getId()).isEmpty()){
-            throw new RuntimeException("Esta iglesia no existe!");
-        }
-        Optional<PastoresEntity> pastorIglesia = pastoresRepository.findByIglesia(pastor.getIglesia());
-        if(pastorIglesia.isPresent() && pastorIglesia.get().getId() != pastor.getId()){
+    // Resolver iglesia: cargar la entidad real desde la BD
+    if(pastor.getIglesia() != null && pastor.getIglesia().getId() != null){
+        IglesiaEntity iglesiaReal = iglesiaRepository.findById(pastor.getIglesia().getId())
+            .orElseThrow(() -> new RuntimeException("Esta iglesia no existe!"));
+        // Validar que no esté asignada a otro pastor
+        Optional<PastoresEntity> pastorIglesia = pastoresRepository.findByIglesia(iglesiaReal);
+        if(pastorIglesia.isPresent() && !pastorIglesia.get().getId().equals(pastor.getId())){
             throw new RuntimeException("Esta iglesia ya tiene un pastor!");
         }
+        pastor.setIglesia(iglesiaReal);
+    } else {
+        pastor.setIglesia(null);
     }
 
     // verificar pastor de distrito
@@ -184,7 +192,7 @@ public class PastoresServiceImpl implements PastoresService{
 
     // Actualizar referencia en el distrito si hay distrito asignado
     if(pastor.getDistrito() != null){
-        DistritoEntity distrito = distritoService.buscarPorId(pastor.getDistrito().getId()).get();
+        DistritoEntity distrito = pastor.getDistrito();
 
         if(pastor.getEsPastorDistrito() == true){
             distrito.setPastorDistrito(pastorActualizado);

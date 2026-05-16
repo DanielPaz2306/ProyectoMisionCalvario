@@ -12,11 +12,11 @@ public class DiezmoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pastor_id", nullable = false)
     private PastoresEntity pastor;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "iglesia_id", nullable = true)
     private IglesiaEntity iglesia;
 

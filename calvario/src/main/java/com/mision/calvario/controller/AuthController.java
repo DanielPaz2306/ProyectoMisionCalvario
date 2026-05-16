@@ -39,8 +39,8 @@ public class AuthController {
                 )
         );
 
-        // Buscar usuario para obtener el rol
-        UsuarioEntity usuario = usuarioRepository.findByUsername(request.getUsername())
+        // Buscar usuario con pastor y distrito precargados
+        UsuarioEntity usuario = usuarioRepository.findByUsernameWithPastorAndDistrito(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         // Generar token

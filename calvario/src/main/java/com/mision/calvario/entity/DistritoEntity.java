@@ -3,6 +3,8 @@ package com.mision.calvario.entity;
 import jakarta.persistence.*;
 import java.util.List;
 
+import org.hibernate.annotations.BatchSize;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -21,16 +23,18 @@ public class DistritoEntity {
     private String nombreDistrito;
 
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pastor_distrito_id", nullable = true)
     private PastoresEntity pastorDistrito;
 
     @JsonIgnore   
     @OneToMany(mappedBy = "distrito")
+    @BatchSize(size = 50)
     private List<PastoresEntity> pastores; 
     
     @JsonIgnore
     @OneToMany(mappedBy = "distrito")
+    @BatchSize(size = 50)
     private List<IglesiaEntity> iglesias;
 
     public DistritoEntity() {

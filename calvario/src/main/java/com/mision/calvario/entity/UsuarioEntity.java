@@ -23,7 +23,7 @@ public class UsuarioEntity {
     @Column(name = "activo", nullable = false)
     private boolean activo;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pastorId", nullable = true)
     private PastoresEntity pastor;
 
